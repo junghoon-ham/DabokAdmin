@@ -2,7 +2,5 @@
     <string name="app_name">DabokAdmin</string>
 
     <string name="can_t_get_result">정보를 가져오지 못했습니다.</string>
-    <string name="search_a_word">검색 단어</string>
-    <string name="definition">Definition:</string>
-    <string name="example">Example:  </string>
+    <string name="register_menu">메뉴 등록하기</string>
 </resources>

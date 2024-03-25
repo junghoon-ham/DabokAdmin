@@ -6,26 +6,26 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 
-data class NavItems(
+data class BottomNavItems(
     val label: String,
     val icon: ImageVector,
     val route: String
 )
 
-val listOfNavItems = listOf(
-    NavItems(
+val listOfBottomNavItems = listOf(
+    BottomNavItems(
         label = "Home",
         icon = Icons.Default.Home,
-        route = MainScreens.HomeScreen.name
+        route = BottomScreens.HomeScreen.rout
     ),
-    NavItems(
+    BottomNavItems(
         label = "Admin",
         icon = Icons.Default.Person,
-        route = MainScreens.AdminScreen.name
+        route = BottomScreens.AdminScreen.rout
     ),
-    NavItems(
+    BottomNavItems(
         label = "Settings",
         icon = Icons.Default.Settings,
-        route = MainScreens.SettingsScreen.name
+        route = BottomScreens.SettingsScreen.rout
     )
 )
