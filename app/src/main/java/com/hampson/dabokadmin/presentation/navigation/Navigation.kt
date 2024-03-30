@@ -1,5 +1,10 @@
 package com.hampson.dabokadmin.presentation.navigation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
@@ -46,6 +51,7 @@ fun Navigation(navController: NavController) {
     val currentDestination = navBackStackEntry?.destination
 
     var selectedScreen by remember { mutableStateOf(BottomNavItems.Home) }
+    var isFABVisible by remember { mutableStateOf(true) }
 
     Scaffold(
         topBar = {
@@ -86,6 +92,7 @@ fun Navigation(navController: NavController) {
                             }
 
                             selectedScreen = navItem
+                            isFABVisible = navItem != BottomNavItems.Settings
                         },
                         icon = {
                             Icon(
@@ -101,7 +108,11 @@ fun Navigation(navController: NavController) {
             }
         },
         floatingActionButton = {
-            if (currentDestination?.route != BottomScreens.SettingsScreen.rout) {
+            AnimatedVisibility(
+                visible = isFABVisible,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
                 AddItemFAB(
                     onClick = {
                         navController.navigate(Route.REGISTER_SCREEN)
@@ -130,6 +141,7 @@ fun Navigation(navController: NavController) {
 
 @Composable
 private fun AddItemFAB(onClick: () -> Unit) {
+
     ExtendedFloatingActionButton(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.primary,
