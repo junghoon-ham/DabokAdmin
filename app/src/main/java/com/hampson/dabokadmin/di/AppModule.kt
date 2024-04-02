@@ -2,8 +2,8 @@ package com.hampson.dabokadmin.di
 
 import com.hampson.dabokadmin.data.api.MenuApi
 import com.hampson.dabokadmin.domain.repository.MenuRepository
-import com.hampson.dabokadmin.domain.use_case.GetMenuUseCase
-import com.hampson.dabokadmin.domain.use_case.MenuUseCases
+import com.hampson.dabokadmin.domain.use_case.menu.GetMenuUseCase
+import com.hampson.dabokadmin.domain.use_case.menu.MenuUseCases
 import com.hampson.dabokadmin.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides

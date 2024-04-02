@@ -1,4 +1,4 @@
-package com.hampson.dabokadmin.domain.use_case
+package com.hampson.dabokadmin.domain.use_case.menu
 
 import com.hampson.dabokadmin.domain.model.Menu
 import com.hampson.dabokadmin.domain.repository.MenuRepository

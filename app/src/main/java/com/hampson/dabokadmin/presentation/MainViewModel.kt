@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hampson.dabokadmin.domain.use_case.MenuUseCases
+import com.hampson.dabokadmin.domain.use_case.menu.MenuUseCases
 import com.hampson.dabokadmin.util.Constants.SPLASH_HOLDING_TIME
 import com.hampson.dabokadmin.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +13,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
