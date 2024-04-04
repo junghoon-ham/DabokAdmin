@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +54,16 @@ fun Navigation(navController: NavController) {
     var selectedScreen by remember { mutableStateOf(BottomNavItems.Home) }
     var isFABVisible by remember { mutableStateOf(true) }
 
+    LaunchedEffect(key1 = currentDestination?.route) {
+        isFABVisible = currentDestination?.route != BottomNavItems.Settings.route
+
+        when (currentDestination?.route) {
+            BottomNavItems.Home.route -> selectedScreen = BottomNavItems.Home
+            BottomNavItems.Admin.route -> selectedScreen = BottomNavItems.Admin
+            BottomNavItems.Settings.route -> selectedScreen = BottomNavItems.Settings
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -81,7 +92,7 @@ fun Navigation(navController: NavController) {
             NavigationBar {
                 BottomNavItems.values().forEach { navItem ->
                     NavigationBarItem(
-                        selected = navItem == selectedScreen,
+                        selected = selectedScreen == navItem,
                         onClick = {
                             bottomNavController.navigate(navItem.route) {
                                 popUpTo(bottomNavController.graph.findStartDestination().id) {
@@ -90,9 +101,6 @@ fun Navigation(navController: NavController) {
                                 launchSingleTop = true
                                 restoreState = true
                             }
-
-                            selectedScreen = navItem
-                            isFABVisible = navItem != BottomNavItems.Settings
                         },
                         icon = {
                             Icon(

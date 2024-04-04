@@ -1,6 +1,8 @@
 package com.hampson.dabokadmin.domain.use_case.validation
 
-class ValidateDate {
+import javax.inject.Inject
+
+class ValidateDate @Inject constructor() {
 
     fun execute(date: String): ValidationResult {
         if (date.isBlank()) {

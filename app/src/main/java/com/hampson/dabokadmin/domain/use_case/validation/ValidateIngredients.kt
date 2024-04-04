@@ -1,8 +1,9 @@
 package com.hampson.dabokadmin.domain.use_case.validation
 
 import com.hampson.dabokadmin.domain.model.Ingredient
+import javax.inject.Inject
 
-class ValidateIngredients {
+class ValidateIngredients @Inject constructor() {
 
     fun execute(ingredient: List<Ingredient>): ValidationResult {
         if (ingredient.isEmpty()) {
