@@ -5,14 +5,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hampson.dabokadmin.domain.model.Category
+import com.hampson.dabokadmin.domain.model.Ingredient
+import com.hampson.dabokadmin.domain.model.allCategories
 import com.hampson.dabokadmin.domain.use_case.menu.MenuUseCases
 import com.hampson.dabokadmin.domain.use_case.validation.ValidateDate
 import com.hampson.dabokadmin.domain.use_case.validation.ValidateIngredients
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,6 +33,33 @@ class RegisterViewModel @Inject constructor(
 
     private val validationEventChannel = Channel<ValidationEvent>()
     val validationEvents = validationEventChannel.receiveAsFlow()
+
+    private val _searchText = MutableStateFlow("")
+    val searchText = _searchText.asStateFlow()
+
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching = _isSearching.asStateFlow()
+
+    private val _categories = MutableStateFlow(allCategories)
+    val categories = searchText
+        .combine(_categories) { text, categories ->
+            if (text.isBlank()) {
+                categories
+            } else {
+                categories.map { category ->
+                    val filterIngredients = category.ingredients?.filter {
+                        it.doesMatchSearchQuery(text)
+                    }
+
+                    category.copy(ingredients = filterIngredients)
+                }
+            }
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            _categories.value
+        )
 
     fun onEvent(event: RegisterFormEvent) {
         when (event) {
@@ -69,6 +102,10 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             validationEventChannel.send(ValidationEvent.Success)
         }
+    }
+
+    fun onSearchTextChange(text: String) {
+        _searchText.value = text
     }
 
     sealed class ValidationEvent {
