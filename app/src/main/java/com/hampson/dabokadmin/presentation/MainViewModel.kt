@@ -41,33 +41,33 @@ class MainViewModel @Inject constructor(
 
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            loadMenuResult()
+            //loadMenuResult()
         }
     }
 
-    private fun loadMenuResult() {
-        viewModelScope.launch {
-            menuUseCases.getMenuUseCase(
-                menuId = menuState.value.menuId
-            ).collect {result ->
-                when (result) {
-                    is Result.Error -> Unit
-                    is Result.Loading -> {
-                        _menuState.update {
-                            it.copy(isLoading = result.isLoading)
-                        }
-                    }
-                    is Result.Success -> {
-                        result.data?.let { menu ->
-                            _menuState.update {
-                                it.copy(
-                                    menu = menu
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+   // private fun loadMenuResult() {
+   //     viewModelScope.launch {
+   //         menuUseCases.getMenusUseCase(
+   //             typeId = menuState.value.menuId
+   //         ).collect {result ->
+   //             when (result) {
+   //                 is Result.Error -> Unit
+   //                 is Result.Loading -> {
+   //                     _menuState.update {
+   //                         it.copy(isLoading = result.isLoading)
+   //                     }
+   //                 }
+   //                 is Result.Success -> {
+   //                     result.data?.let { menu ->
+   //                         _menuState.update {
+   //                             it.copy(
+   //                                 menu = menu
+   //                             )
+   //                         }
+   //                     }
+   //                 }
+   //             }
+   //         }
+   //     }
+   // }
 }

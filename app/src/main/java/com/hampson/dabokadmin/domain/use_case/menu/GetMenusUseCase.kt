@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class GetMenuUseCase @Inject constructor(
+class GetMenusUseCase @Inject constructor(
     private val repository: MenuRepository
 ) {
-    suspend operator fun invoke(menuId: Long): Flow<Result<Menu>> {
-        return repository.getMenuResult(menuId).flowOn(Dispatchers.Default)
+    suspend operator fun invoke(typeId: Int): Flow<Result<List<Menu>>> {
+        return repository.getMenusResult(typeId).flowOn(Dispatchers.Default)
     }
 }

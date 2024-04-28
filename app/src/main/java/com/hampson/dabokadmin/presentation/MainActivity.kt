@@ -16,8 +16,6 @@ import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.hampson.dabokadmin.presentation.main.MainScreen
 import com.hampson.dabokadmin.presentation.navigation.Route
-import com.hampson.dabokadmin.presentation.register.RegisterScreen
-import com.hampson.dabokadmin.ui.theme.DabokAdminTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -40,16 +38,9 @@ class MainActivity : ComponentActivity() {
                 navController = navController,
                 startDestination = Route.MAIN_SCREEN
             ) {
-
-                composable(Route.MAIN_SCREEN) {
+                composable(route = Route.MAIN_SCREEN) {
                     MainScreen(
                         navController = navController,
-                    )
-                }
-
-                composable(route = Route.REGISTER_SCREEN) {
-                    RegisterScreen(
-                        navController = navController
                     )
                 }
             }

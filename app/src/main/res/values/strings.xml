@@ -3,7 +3,14 @@
 
     <string name="can_t_get_result">정보를 가져오지 못했습니다.</string>
     <string name="register_menu">메뉴 등록하기</string>
+    <string name="selected_menu">메뉴 선택하기</string>
     <string name="select_date">날짜 선택</string>
     <string name="input_date">날짜를 선택해 주세요.</string>
+    <string name="input_menu">메뉴를 선택해 주세요.</string>
+    <string name="search_menu">메뉴를 검색하세요.</string>
+    <string name="category">카테고리</string>
     <string name="add_menu">메뉴 추가</string>
+    <string name="cancel">취소</string>
+    <string name="ok">확인</string>
+    <string name="save">저장</string>
 </resources>

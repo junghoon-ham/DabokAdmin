@@ -1,5 +1,6 @@
 package com.hampson.dabokadmin.presentation.navigation
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandIn
 import androidx.compose.animation.fadeIn
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode.Companion.Screen
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
@@ -42,6 +44,7 @@ import androidx.navigation.compose.rememberNavController
 import com.hampson.dabokadmin.R
 import com.hampson.dabokadmin.presentation.admin.AdminScreen
 import com.hampson.dabokadmin.presentation.home.HomeScreen
+import com.hampson.dabokadmin.presentation.register.RegisterActivity
 import com.hampson.dabokadmin.presentation.settings.SettingsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,6 +53,7 @@ fun Navigation(navController: NavController) {
     val bottomNavController = rememberNavController()
     val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val context = LocalContext.current
 
     var selectedScreen by remember { mutableStateOf(BottomNavItems.Home) }
     var isFABVisible by remember { mutableStateOf(true) }
@@ -123,7 +127,7 @@ fun Navigation(navController: NavController) {
             ) {
                 AddItemFAB(
                     onClick = {
-                        navController.navigate(Route.REGISTER_SCREEN)
+                        context.startActivity(Intent(context, RegisterActivity::class.java))
                     }
                 )
             }

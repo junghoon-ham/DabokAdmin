@@ -1,13 +1,14 @@
 package com.hampson.dabokadmin.data.api
 
+import com.hampson.dabokadmin.data.dto.ApiResponse
 import com.hampson.dabokadmin.data.dto.MenuDto
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface MenuApi {
 
-    @GET("{menuId}")
-    suspend fun getMenuId(
-        @Path("menuId") menuId: Long
-    ): MenuDto
+    @GET("v1/menu")
+    suspend fun getMenus(
+        @Query("typeId") typeId: Int
+    ): ApiResponse<List<MenuDto>>
 }
