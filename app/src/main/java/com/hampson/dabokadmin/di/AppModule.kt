@@ -1,11 +1,15 @@
 package com.hampson.dabokadmin.di
 
 import com.hampson.dabokadmin.data.api.CategoryApi
+import com.hampson.dabokadmin.data.api.MealApi
 import com.hampson.dabokadmin.data.api.MenuApi
 import com.hampson.dabokadmin.domain.repository.CategoryRepository
+import com.hampson.dabokadmin.domain.repository.MealRepository
 import com.hampson.dabokadmin.domain.repository.MenuRepository
 import com.hampson.dabokadmin.domain.use_case.category.CategoryUseCases
 import com.hampson.dabokadmin.domain.use_case.category.GetCategoriesUseCase
+import com.hampson.dabokadmin.domain.use_case.meal.MealUseCases
+import com.hampson.dabokadmin.domain.use_case.meal.RegisterMealUseCase
 import com.hampson.dabokadmin.domain.use_case.menu.GetMenusUseCase
 import com.hampson.dabokadmin.domain.use_case.menu.MenuUseCases
 import com.hampson.dabokadmin.util.Constants.BASE_URL
@@ -57,6 +61,17 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun providesMealApi() : MealApi {
+        return Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL)
+            .client(client)
+            .build()
+            .create()
+    }
+
+    @Provides
+    @Singleton
     fun provideMenuUseCases(repository: MenuRepository): MenuUseCases {
         return MenuUseCases(
             getMenusUseCase = GetMenusUseCase(repository)
@@ -68,6 +83,14 @@ object AppModule {
     fun provideCategoryUseCases(repository: CategoryRepository): CategoryUseCases {
         return CategoryUseCases(
             getCategoriesUseCase = GetCategoriesUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMealUseCases(repository: MealRepository): MealUseCases {
+        return MealUseCases(
+            registerMealUseCase = RegisterMealUseCase(repository)
         )
     }
 }

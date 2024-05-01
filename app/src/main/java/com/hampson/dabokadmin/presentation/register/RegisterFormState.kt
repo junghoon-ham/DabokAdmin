@@ -1,13 +1,10 @@
 package com.hampson.dabokadmin.presentation.register
 
-import com.hampson.dabokadmin.domain.model.Ingredient
-import com.hampson.dabokadmin.domain.model.Origin
+import com.hampson.dabokadmin.domain.model.Menu
 
 data class RegisterFormState(
     val date: String = "",
     val dateError: String? = null,
-    val ingredients: List<Ingredient> = listOf(),
-    val ingredientsError: String? = null,
-    val origins: List<Origin>? = null,
-    val menuImages: List<String>? = null
+    val menus: List<Menu> = listOf(),
+    val menusError: String? = null,
 )

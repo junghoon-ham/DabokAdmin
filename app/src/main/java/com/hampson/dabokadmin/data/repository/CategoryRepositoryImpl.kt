@@ -18,8 +18,6 @@ class CategoryRepositoryImpl @Inject constructor(
     private val application: Application
 ) : CategoryRepository {
 
-
-
     override suspend fun getCategoriesResult(): Flow<Result<List<Category>>> {
         return flow {
             emit(Result.Loading(true))
@@ -45,7 +43,7 @@ class CategoryRepositoryImpl @Inject constructor(
 
             remoteCategoriesResultDto.let { categoriesResultDto ->
                 categoriesResultDto.let { categoriesDto ->
-                    emit(Result.Success(categoriesDto.payload.data.toCategories()))
+                    emit(Result.Success(categoriesDto.payload.data?.toCategories()))
                     emit(Result.Loading(false))
                     return@flow
                 }

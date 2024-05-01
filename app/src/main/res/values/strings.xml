@@ -2,6 +2,8 @@
     <string name="app_name">DabokAdmin</string>
 
     <string name="can_t_get_result">정보를 가져오지 못했습니다.</string>
+    <string name="register_meal">식단 등록하기</string>
+    <string name="register_meal_success">식단이 등록되었습니다.</string>
     <string name="register_menu">메뉴 등록하기</string>
     <string name="selected_menu">메뉴 선택하기</string>
     <string name="select_date">날짜 선택</string>

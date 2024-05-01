@@ -9,9 +9,10 @@ import androidx.lifecycle.viewModelScope
 import com.hampson.dabokadmin.domain.model.Category
 import com.hampson.dabokadmin.domain.model.Menu
 import com.hampson.dabokadmin.domain.use_case.category.CategoryUseCases
+import com.hampson.dabokadmin.domain.use_case.meal.MealUseCases
 import com.hampson.dabokadmin.domain.use_case.menu.MenuUseCases
 import com.hampson.dabokadmin.domain.use_case.validation.ValidateDate
-import com.hampson.dabokadmin.domain.use_case.validation.ValidateIngredients
+import com.hampson.dabokadmin.domain.use_case.validation.ValidateMenus
 import com.hampson.dabokadmin.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -31,8 +32,9 @@ import javax.inject.Inject
 class RegisterViewModel @Inject constructor(
     private val categoryUseCase: CategoryUseCases,
     private val menuUseCases: MenuUseCases,
+    private val mealUseCases: MealUseCases,
     private val validateDate: ValidateDate = ValidateDate(),
-    private val validateIngredients: ValidateIngredients = ValidateIngredients()
+    private val validateMenus: ValidateMenus = ValidateMenus()
 ): ViewModel() {
 
     var registerState by mutableStateOf(RegisterFormState())
@@ -113,19 +115,37 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
+    private fun registerMeal() {
+        viewModelScope.launch {
+            mealUseCases.registerMealUseCase(
+                date = registerState.date,
+                menuIds = registerState.menus.map { it.id }
+            ).collect { result ->
+                when (result) {
+                    is Result.Error -> Unit
+                    is Result.Loading -> Unit
+                    is Result.Success -> {
+                        validationEventChannel.send(ValidationEvent.Success)
+                    }
+                }
+            }
+        }
+    }
+
     fun onEvent(event: RegisterFormEvent) {
         when (event) {
             is RegisterFormEvent.DateChanged -> {
-                registerState = registerState.copy(date = event.date)
+                registerState = registerState.copy(
+                    date = event.date,
+                    dateError = null
+                )
             }
-            is RegisterFormEvent.IngredientsChanged -> {
-                registerState = registerState.copy(ingredients = event.ingredients)
-            }
-            is RegisterFormEvent.OriginsChanged -> {
-                registerState = registerState.copy(origins = event.origins)
-            }
-            is RegisterFormEvent.MenuImagesChanged -> {
-                registerState = registerState.copy(menuImages = event.menuImages)
+            is RegisterFormEvent.MenuChanged -> {
+                onSelectedMenu(event.menu)
+                registerState = registerState.copy(
+                    menus = selectedMenus,
+                    menusError = null
+                )
             }
             is RegisterFormEvent.Submit -> {
                 submitDate()
@@ -135,25 +155,22 @@ class RegisterViewModel @Inject constructor(
 
     private fun submitDate() {
         val dateResult = validateDate.execute(registerState.date)
-        val ingredientsResult = validateIngredients.execute(registerState.ingredients)
-        val originsResult = registerState.origins
-        val menuImagesResult = registerState.menuImages
+        val menusResult = validateMenus.execute(registerState.menus)
 
         val hasError = listOf(
             dateResult,
-            ingredientsResult
+            menusResult
         ).any { !it.successful }
 
         if (hasError) {
             registerState = registerState.copy(
                 dateError = dateResult.errorMessage,
-                ingredientsError = ingredientsResult.errorMessage
+                menusError = menusResult.errorMessage
             )
             return
         }
-        viewModelScope.launch {
-            validationEventChannel.send(ValidationEvent.Success)
-        }
+
+        registerMeal()
     }
 
     fun onSearchTextChange(text: String) {
@@ -165,7 +182,7 @@ class RegisterViewModel @Inject constructor(
         loadMenusResult(category.id.toInt())
     }
 
-    fun onSelectedMenu(menu: Menu) {
+    private fun onSelectedMenu(menu: Menu) {
         if (selectedMenus.contains(menu)) {
             selectedMenus.remove(menu)
         } else {

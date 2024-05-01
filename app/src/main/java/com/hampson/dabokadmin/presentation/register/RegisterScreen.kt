@@ -1,5 +1,8 @@
 package com.hampson.dabokadmin.presentation.register
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -59,7 +62,7 @@ import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 
 @Composable
-fun RegisterScreen(navController: NavController) {
+fun RegisterScreen() {
     val viewModel = hiltViewModel<RegisterViewModel>()
     val registerState = viewModel.registerState
     val categoriesState = viewModel.categoriesState.collectAsState()
@@ -67,14 +70,16 @@ fun RegisterScreen(navController: NavController) {
 
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val activity = context.findActivity()
 
     LaunchedEffect(key1 = context) {
         viewModel.validationEvents.collect { event ->
             when (event) {
                 is RegisterViewModel.ValidationEvent.Success -> {
+                    activity?.finish()
                     Toast.makeText(
                         context,
-                        "성공",
+                        "식단이 등록되었습니다.",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -85,29 +90,45 @@ fun RegisterScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 24.dp)
+            .padding(start = 16.dp, end = 16.dp)
             .verticalScroll(scrollState)
     ) {
-        DateComponent(viewModel = viewModel, registerState = registerState)
         Spacer(modifier = Modifier.height(16.dp))
+
+        DateComponent(
+            viewModel = viewModel,
+            registerState = registerState
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         MenuComponent(
             viewModel = viewModel,
             categoryState = categoriesState,
-            menusState = menusState
+            menusState = menusState,
+            registerState = registerState
         )
 
+        Spacer(modifier = Modifier.height(86.dp))
+    }
 
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .padding(bottom = 22.dp, start = 16.dp, end = 16.dp)
+    ) {
         Button(
             onClick = {
                 viewModel.onEvent(RegisterFormEvent.Submit)
             },
-            modifier = Modifier.align(Alignment.End)
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
         ) {
-            Text(text = "생성")
+            Text(
+                modifier = Modifier
+                    .padding(top = 8.dp, bottom = 8.dp),
+                text = stringResource(id = R.string.register_meal)
+            )
         }
     }
 }
@@ -176,7 +197,8 @@ private fun DateComponent(
 private fun MenuComponent(
     viewModel: RegisterViewModel,
     categoryState: State<CategoryFormState>,
-    menusState: State<MenuFormState>
+    menusState: State<MenuFormState>,
+    registerState: RegisterFormState
 ) {
     var isOpenDialog by remember { mutableStateOf(false) }
 
@@ -226,7 +248,7 @@ private fun MenuComponent(
                                 FilterChip(
                                     selected = isSelected,
                                     onClick = {
-                                        viewModel.onSelectedMenu(menu)
+                                        viewModel.onEvent(RegisterFormEvent.MenuChanged(menu))
                                     },
                                     label = { Text(text = menu.name) },
                                     leadingIcon = if (isSelected) {
@@ -267,6 +289,15 @@ private fun MenuComponent(
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .border(
+                width = 2.dp,
+                color = if (registerState.menusError != null) {
+                    MaterialTheme.colorScheme.error
+                } else {
+                    MaterialTheme.colorScheme.primaryContainer
+                },
+                shape = RoundedCornerShape(10.dp)
+            )
     ) {
         Text(
             text = stringResource(id = R.string.input_menu),
@@ -283,7 +314,7 @@ private fun MenuComponent(
                 FilterChip(
                     selected = isSelected,
                     onClick = {
-                        viewModel.onSelectedMenu(menu)
+                        viewModel.onEvent(RegisterFormEvent.MenuChanged(menu))
                     },
                     label = { Text(text = menu.name) },
                     leadingIcon = if (isSelected) {
@@ -305,12 +336,14 @@ private fun MenuComponent(
         }
     }
 
-    Spacer(modifier = Modifier.width(16.dp))
 
     Text(
         text = stringResource(id = R.string.category),
-        style = MaterialTheme.typography.labelMedium
+        style = MaterialTheme.typography.labelMedium,
+        modifier = Modifier
+            .padding(top = 16.dp, bottom = 8.dp)
     )
+
 
     // 카테고리 리스트
     FlowRow(
@@ -330,4 +363,10 @@ private fun MenuComponent(
         }
     }
     Spacer(modifier = Modifier.height(16.dp))
+}
+
+fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }
