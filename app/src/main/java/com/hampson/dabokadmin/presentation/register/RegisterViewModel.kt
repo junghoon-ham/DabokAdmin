@@ -16,8 +16,10 @@ import com.hampson.dabokadmin.domain.use_case.validation.ValidateMenus
 import com.hampson.dabokadmin.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -75,6 +77,12 @@ class RegisterViewModel @Inject constructor(
     private val validationEventChannel = Channel<ValidationEvent>()
     val validationEvents = validationEventChannel.receiveAsFlow()
 
+    private val _registerSuccess = MutableStateFlow(false)
+    val registerSuccess = _registerSuccess.asSharedFlow()
+
+    private val _successEvent = MutableSharedFlow<String>()
+    val successEvent = _successEvent.asSharedFlow()
+
     init {
         loadCategoriesResult()
     }
@@ -115,7 +123,13 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
-    private fun registerMeal() {
+    fun resetMenus() {
+        _menusState.value = _menusState.value.copy(
+            menus = listOf()
+        )
+    }
+
+    fun registerMeal() {
         viewModelScope.launch {
             mealUseCases.registerMealUseCase(
                 date = registerState.date,
@@ -125,7 +139,8 @@ class RegisterViewModel @Inject constructor(
                     is Result.Error -> Unit
                     is Result.Loading -> Unit
                     is Result.Success -> {
-                        validationEventChannel.send(ValidationEvent.Success)
+                        _registerSuccess.value = true
+                        _successEvent.emit("식단이 등록되었습니다.")
                     }
                 }
             }
@@ -148,12 +163,12 @@ class RegisterViewModel @Inject constructor(
                 )
             }
             is RegisterFormEvent.Submit -> {
-                submitDate()
+                validationCheck()
             }
         }
     }
 
-    private fun submitDate() {
+    private fun validationCheck() {
         val dateResult = validateDate.execute(registerState.date)
         val menusResult = validateMenus.execute(registerState.menus)
 
@@ -170,7 +185,9 @@ class RegisterViewModel @Inject constructor(
             return
         }
 
-        registerMeal()
+        viewModelScope.launch {
+            validationEventChannel.send(ValidationEvent.Success)
+        }
     }
 
     fun onSearchTextChange(text: String) {

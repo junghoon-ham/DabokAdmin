@@ -5,14 +5,18 @@
     <string name="register_meal">식단 등록하기</string>
     <string name="register_meal_success">식단이 등록되었습니다.</string>
     <string name="register_menu">메뉴 등록하기</string>
-    <string name="selected_menu">메뉴 선택하기</string>
+    <string name="select_menu">메뉴 선택하기</string>
     <string name="select_date">날짜 선택</string>
     <string name="input_date">날짜를 선택해 주세요.</string>
     <string name="input_menu">메뉴를 선택해 주세요.</string>
+    <string name="selected_menu">선택한 메뉴</string>
     <string name="search_menu">메뉴를 검색하세요.</string>
     <string name="category">카테고리</string>
     <string name="add_menu">메뉴 추가</string>
     <string name="cancel">취소</string>
     <string name="ok">확인</string>
     <string name="save">저장</string>
+    <string name="register">등록</string>
+    <string name="check_register_meal">식단을 등록하시겠습니까?</string>
+    <string name="empty_menus">등록된 메뉴가 없습니다.</string>
 </resources>

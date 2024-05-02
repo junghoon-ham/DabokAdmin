@@ -24,6 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CardDefaults
@@ -34,8 +36,9 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -50,10 +53,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.hampson.dabokadmin.R
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -72,18 +75,29 @@ fun RegisterScreen() {
     val context = LocalContext.current
     val activity = context.findActivity()
 
+    var openAlertDialog by remember { mutableStateOf(false) }
+
+    val success = viewModel.registerSuccess.collectAsState(false).value
+
     LaunchedEffect(key1 = context) {
         viewModel.validationEvents.collect { event ->
             when (event) {
                 is RegisterViewModel.ValidationEvent.Success -> {
-                    activity?.finish()
-                    Toast.makeText(
-                        context,
-                        "식단이 등록되었습니다.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    openAlertDialog = true
                 }
             }
+        }
+    }
+
+    LaunchedEffect(key1 = success) {
+        viewModel.successEvent.collect {  message ->
+            activity?.finish()
+
+            Toast.makeText(
+                context,
+                message,
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -113,7 +127,8 @@ fun RegisterScreen() {
     }
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .padding(bottom = 22.dp, start = 16.dp, end = 16.dp)
     ) {
         Button(
@@ -131,6 +146,13 @@ fun RegisterScreen() {
             )
         }
     }
+
+    AlertDialogRegister(
+        openAlertDialog = openAlertDialog,
+        viewModel = viewModel,
+        onClose = { openAlertDialog = false },
+        onConfirm = { viewModel.registerMeal() }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -146,7 +168,7 @@ private fun DateComponent(
         config = CalendarConfig(
             monthSelection = true,
             yearSelection = true,
-            style = CalendarStyle.WEEK
+            style = CalendarStyle.MONTH
         ),
         selection = CalendarSelection.Date { date ->
             viewModel.onEvent(RegisterFormEvent.DateChanged(date.toString()))
@@ -211,6 +233,7 @@ private fun MenuComponent(
             onDismissRequest = {
                 isOpenDialog = false
                 viewModel.onSearchTextChange("")
+                viewModel.resetMenus()
             },
             title = { Text(viewModel.selectedCategory.label) },
             text = {
@@ -221,51 +244,69 @@ private fun MenuComponent(
                         .fillMaxWidth()
                         .verticalScroll(scrollState)
                 ) {
-                    TextField(
+                    OutlinedTextField(
                         value = searchText,
                         onValueChange = viewModel::onSearchTextChange,
                         modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(text = stringResource(id = R.string.search_menu)) }
+                        placeholder = { Text(text = stringResource(id = R.string.search_menu)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.Search,
+                                contentDescription = "Search Icon"
+                            )
+                        },
+                        singleLine = true
                     )
 
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
 
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        if (isSearching) {
-                            Box(
-                                modifier = Modifier.fillMaxSize()
-                            ) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
-                            }
-                        } else {
-                            menusState.value.menus.forEach { menu ->
-                                val isSelected = viewModel.selectedMenus.contains(menu)
+                    if (menusState.value.menus.isEmpty()) {
+                        Text(
+                            text = stringResource(id = R.string.empty_menus),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 32.dp, bottom = 32.dp),
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        FlowRow(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            if (isSearching) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
+                            } else {
+                                menusState.value.menus.forEach { menu ->
+                                    val isSelected = viewModel.selectedMenus.contains(menu)
 
-                                FilterChip(
-                                    selected = isSelected,
-                                    onClick = {
-                                        viewModel.onEvent(RegisterFormEvent.MenuChanged(menu))
-                                    },
-                                    label = { Text(text = menu.name) },
-                                    leadingIcon = if (isSelected) {
-                                        {
-                                            Icon(
-                                                imageVector = Icons.Filled.Done,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(
-                                                    FilterChipDefaults.IconSize)
-                                            )
+                                    FilterChip(
+                                        selected = isSelected,
+                                        onClick = {
+                                            viewModel.onEvent(RegisterFormEvent.MenuChanged(menu))
+                                        },
+                                        label = { Text(text = menu.name) },
+                                        leadingIcon = if (isSelected) {
+                                            {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Done,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(
+                                                        FilterChipDefaults.IconSize)
+                                                )
+                                            }
+                                        } else {
+                                            null
                                         }
-                                    } else {
-                                        null
-                                    }
-                                )
+                                    )
 
-                                Spacer(modifier = Modifier.width(6.dp))
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                }
                             }
                         }
                     }
@@ -276,6 +317,7 @@ private fun MenuComponent(
                     onClick = {
                         isOpenDialog = false
                         viewModel.onSearchTextChange("")
+                        viewModel.resetMenus()
                     }
                 ) {
                     Text(stringResource(id = R.string.ok))
@@ -300,7 +342,7 @@ private fun MenuComponent(
             )
     ) {
         Text(
-            text = stringResource(id = R.string.input_menu),
+            text = stringResource(id = R.string.selected_menu),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)
         )
         FlowRow(
@@ -363,6 +405,60 @@ private fun MenuComponent(
         }
     }
     Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
+fun AlertDialogRegister(
+    openAlertDialog: Boolean,
+    onClose: () -> Unit,
+    onConfirm: () -> Unit,
+    viewModel: RegisterViewModel
+) {
+    if (openAlertDialog) {
+        AlertDialog(
+            onDismissRequest = { onClose() },
+            confirmButton = {
+                Button(onClick = { onConfirm() }) {
+                    Text(text = stringResource(id = R.string.register))
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { onClose() }) {
+                    Text(text = stringResource(id = R.string.cancel))
+                }
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = null
+                )
+            },
+            title = {
+                Text(
+                    text = stringResource(id = R.string.check_register_meal),
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "날짜 : ${viewModel.registerState.date}",
+                        fontSize = 14.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    val menuNames = viewModel.registerState.menus.joinToString(separator = ", ") { it.name }
+                    Text(
+                        text = "메뉴 : $menuNames",
+                        fontSize = 14.sp
+                    )
+                }
+            }
+        )
+    }
 }
 
 fun Context.findActivity(): Activity? = when (this) {
