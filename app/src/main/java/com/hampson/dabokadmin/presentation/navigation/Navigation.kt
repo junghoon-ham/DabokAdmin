@@ -157,6 +157,7 @@ private fun AddItemFAB(onClick: () -> Unit) {
     ExtendedFloatingActionButton(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.primary,
+        shape = MaterialTheme.shapes.medium,
         onClick = {
             onClick()
         },

@@ -4,10 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,10 +18,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.compose.rememberNavController
 import com.hampson.dabokadmin.R
-import com.hampson.dabokadmin.presentation.components.DefaultTopBar
+import com.hampson.dabokadmin.presentation.components.AppBarColor
 import com.hampson.dabokadmin.ui.theme.DabokAdminTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,6 +34,8 @@ class RegisterActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             DabokAdminTheme {
+                AppBarColor()
+
                 Scaffold(
                     topBar = {
                         TopAppBar(
@@ -44,7 +43,7 @@ class RegisterActivity : ComponentActivity() {
                                 containerColor = MaterialTheme.colorScheme.primaryContainer
                             ),
                             title = {
-                                Text(stringResource(id = R.string.register_meal))
+                                Text(stringResource(id = R.string.register_meal_headline))
                             },
                             navigationIcon = {
                                 IconButton(onClick = {
