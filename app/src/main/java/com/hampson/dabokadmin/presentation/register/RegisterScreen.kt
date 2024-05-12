@@ -41,7 +41,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,8 +67,8 @@ import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 fun RegisterScreen() {
     val viewModel = hiltViewModel<RegisterViewModel>()
     val registerState = viewModel.registerState
-    val categoriesState = viewModel.categoriesState.collectAsState()
-    val menusState = viewModel.menusState.collectAsState()
+    val categoriesState by viewModel.categoriesState.collectAsState()
+    val menusState by viewModel.menusState.collectAsState()
 
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -77,7 +76,7 @@ fun RegisterScreen() {
 
     var openAlertDialog by remember { mutableStateOf(false) }
 
-    val success = viewModel.registerSuccess.collectAsState(false).value
+    val success by viewModel.registerSuccess.collectAsState(false)
 
     LaunchedEffect(key1 = context) {
         viewModel.validationEvents.collect { event ->
@@ -218,8 +217,8 @@ private fun DateComponent(
 @Composable
 private fun MenuComponent(
     viewModel: RegisterViewModel,
-    categoryState: State<CategoryFormState>,
-    menusState: State<MenuFormState>,
+    categoryState: CategoryFormState,
+    menusState: MenuFormState,
     registerState: RegisterFormState
 ) {
     var isOpenDialog by remember { mutableStateOf(false) }
@@ -260,7 +259,7 @@ private fun MenuComponent(
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    if (menusState.value.menus.isEmpty()) {
+                    if (menusState.menus.isEmpty()) {
                         Text(
                             text = stringResource(id = R.string.empty_menus),
                             modifier = Modifier
@@ -282,7 +281,7 @@ private fun MenuComponent(
                                     )
                                 }
                             } else {
-                                menusState.value.menus.forEach { menu ->
+                                menusState.menus.forEach { menu ->
                                     val isSelected = viewModel.selectedMenus.contains(menu)
 
                                     FilterChip(
@@ -391,7 +390,7 @@ private fun MenuComponent(
     FlowRow(
         modifier = Modifier.fillMaxWidth()
     ) {
-        categoryState.value.categories.forEach { category ->
+        categoryState.categories.forEach { category ->
             FilterChip(
                 selected = false,
                 onClick = {

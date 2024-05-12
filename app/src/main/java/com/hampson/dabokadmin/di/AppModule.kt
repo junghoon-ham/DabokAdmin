@@ -8,6 +8,7 @@ import com.hampson.dabokadmin.domain.repository.MealRepository
 import com.hampson.dabokadmin.domain.repository.MenuRepository
 import com.hampson.dabokadmin.domain.use_case.category.CategoryUseCases
 import com.hampson.dabokadmin.domain.use_case.category.GetCategoriesUseCase
+import com.hampson.dabokadmin.domain.use_case.meal.GetMealsUseCase
 import com.hampson.dabokadmin.domain.use_case.meal.MealUseCases
 import com.hampson.dabokadmin.domain.use_case.meal.RegisterMealUseCase
 import com.hampson.dabokadmin.domain.use_case.menu.GetMenusUseCase
@@ -90,7 +91,8 @@ object AppModule {
     @Singleton
     fun provideMealUseCases(repository: MealRepository): MealUseCases {
         return MealUseCases(
-            registerMealUseCase = RegisterMealUseCase(repository)
+            registerMealUseCase = RegisterMealUseCase(repository),
+            getMealsUseCase = GetMealsUseCase(repository)
         )
     }
 }

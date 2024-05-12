@@ -26,14 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.hampson.dabokadmin.domain.model.Meal
 import com.hampson.dabokadmin.presentation.register.RegisterFormEvent
 import kotlin.random.Random
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun MealComponent(
-    date: String,
-    menus: List<String>,
+    meal: Meal,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -58,7 +58,7 @@ fun MealComponent(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = date,
+                text = meal.date,
                 style = MaterialTheme.typography.titleLarge
             )
 
@@ -67,11 +67,11 @@ fun MealComponent(
             FlowRow(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                menus.forEach { menu ->
+                meal.menuList.forEach { menu ->
                     FilterChip(
                         selected = false,
                         onClick = {},
-                        label = { Text(text = menu) },
+                        label = { Text(text = menu.name) },
                         leadingIcon = null
                     )
 

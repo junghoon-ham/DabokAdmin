@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val mainViewModel = hiltViewModel<MainViewModel>()
-            val menuState by mainViewModel.menuState.collectAsState()
+            val menuState by mainViewModel.mealsState.collectAsState()
             val navController = rememberNavController()
 
             installSplashScreen().apply {

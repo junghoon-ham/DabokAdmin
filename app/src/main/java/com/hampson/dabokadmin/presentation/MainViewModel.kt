@@ -5,29 +5,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hampson.dabokadmin.domain.use_case.menu.MenuUseCases
+import com.hampson.dabokadmin.domain.use_case.meal.MealUseCases
+import com.hampson.dabokadmin.presentation.home.MealState
 import com.hampson.dabokadmin.util.Constants.SPLASH_HOLDING_TIME
-import com.hampson.dabokadmin.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.hampson.dabokadmin.util.Result
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val menuUseCases: MenuUseCases
+    private val mealsUseCase: MealUseCases
 ) : ViewModel() {
 
     var splashScreenDelay by mutableStateOf(true)
 
-    private val _menuState = MutableStateFlow(MenuState())
-    val menuState = _menuState.asStateFlow()
-
-    private var searchJob: Job? = null
+    private val _mealsState = MutableStateFlow(MealState())
+    val mealsState = _mealsState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -35,39 +33,29 @@ class MainViewModel @Inject constructor(
             splashScreenDelay = false
         }
 
-        _menuState.update {
-            it.copy(menuId = -1)
-        }
-
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            //loadMenuResult()
-        }
+        loadMealsResult()
     }
 
-   // private fun loadMenuResult() {
-   //     viewModelScope.launch {
-   //         menuUseCases.getMenusUseCase(
-   //             typeId = menuState.value.menuId
-   //         ).collect {result ->
-   //             when (result) {
-   //                 is Result.Error -> Unit
-   //                 is Result.Loading -> {
-   //                     _menuState.update {
-   //                         it.copy(isLoading = result.isLoading)
-   //                     }
-   //                 }
-   //                 is Result.Success -> {
-   //                     result.data?.let { menu ->
-   //                         _menuState.update {
-   //                             it.copy(
-   //                                 menu = menu
-   //                             )
-   //                         }
-   //                     }
-   //                 }
-   //             }
-   //         }
-   //     }
-   // }
+   fun loadMealsResult() {
+       viewModelScope.launch {
+           mealsUseCase.getMealsUseCase()
+               .collect { result ->
+                   when (result) {
+                       is Result.Error -> Unit
+                       is Result.Loading -> {
+                           _mealsState.update {
+                               it.copy(isLoading = false)
+                           }
+                       }
+                       is Result.Success -> {
+                           result.data?.let { meals ->
+                               _mealsState.value = _mealsState.value.copy(
+                                   meals = meals
+                               )
+                           }
+                       }
+                   }
+               }
+       }
+   }
 }
