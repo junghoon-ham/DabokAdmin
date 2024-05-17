@@ -108,4 +108,6 @@ dependencies {
     // Coil
     implementation("io.coil-kt:coil:2.0.0")
     implementation("io.coil-kt:coil-compose:2.0.0")
+
+    implementation("com.google.accompanist:accompanist-flowlayout:0.24.8-beta")
 }

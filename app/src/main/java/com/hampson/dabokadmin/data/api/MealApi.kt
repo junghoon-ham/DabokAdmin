@@ -14,6 +14,6 @@ interface MealApi {
         @Body mealRequest: MealRegistrationRequest
     ): ApiResponse<Unit>
 
-    @GET("v1/meal")
+    @GET("v1/meal/day/50")
     suspend fun getMeals(): ApiResponse<List<MealDto>>
 }

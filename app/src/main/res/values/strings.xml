@@ -20,4 +20,6 @@
     <string name="register">등록</string>
     <string name="check_register_meal">식단을 등록하시겠습니까?</string>
     <string name="empty_menus">등록된 메뉴가 없습니다.</string>
+    <string name="delete_meal">식단 삭제하기</string>
+    <string name="update_meal">식단 수정하기</string>
 </resources>
