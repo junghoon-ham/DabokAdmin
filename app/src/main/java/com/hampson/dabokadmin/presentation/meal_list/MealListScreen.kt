@@ -1,8 +1,11 @@
-package com.hampson.dabokadmin.presentation.home
+package com.hampson.dabokadmin.presentation.meal_list
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -15,9 +18,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.hampson.dabokadmin.presentation.MainViewModel
+import com.hampson.dabokadmin.ui.effect.MealShimmerComponent
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun MealListScreen(navController: NavController) {
 
     val viewModel = hiltViewModel<MainViewModel>()
     val mealsState by viewModel.mealsState.collectAsState()
@@ -38,12 +42,22 @@ fun HomeScreen(navController: NavController) {
         }
     }
 
-    LazyColumn {
-        items(mealsState.meals) { meal ->
-            MealComponent(
-                meal = meal,
-                modifier = Modifier.padding(16.dp)
-            )
+    Surface(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        LazyColumn(
+            contentPadding = PaddingValues(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(mealsState.meals) { meal ->
+                if (mealsState.isLoading) {
+                    MealShimmerComponent()
+                } else {
+                    MealComponent(
+                        meal = meal
+                    )
+                }
+            }
         }
     }
 }

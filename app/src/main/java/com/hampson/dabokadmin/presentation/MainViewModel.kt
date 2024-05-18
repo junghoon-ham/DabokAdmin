@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hampson.dabokadmin.domain.use_case.meal.MealUseCases
-import com.hampson.dabokadmin.presentation.home.MealState
+import com.hampson.dabokadmin.presentation.meal_list.MealState
 import com.hampson.dabokadmin.util.Constants.SPLASH_HOLDING_TIME
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -44,10 +44,11 @@ class MainViewModel @Inject constructor(
                        is Result.Error -> Unit
                        is Result.Loading -> {
                            _mealsState.update {
-                               it.copy(isLoading = false)
+                               it.copy(isLoading = result.isLoading)
                            }
                        }
                        is Result.Success -> {
+                           delay(500)
                            result.data?.let { meals ->
                                _mealsState.value = _mealsState.value.copy(
                                    meals = meals

@@ -1,4 +1,4 @@
-package com.hampson.dabokadmin.presentation.home
+package com.hampson.dabokadmin.presentation.meal_list
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -6,6 +6,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -41,13 +42,12 @@ import com.hampson.dabokadmin.domain.model.Meal
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MealComponent(
-    meal: Meal,
-    modifier: Modifier = Modifier
+    meal: Meal
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     Card(
-        modifier = modifier,
+        modifier = Modifier.fillMaxSize(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),

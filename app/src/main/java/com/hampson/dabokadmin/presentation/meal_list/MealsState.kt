@@ -1,4 +1,4 @@
-package com.hampson.dabokadmin.presentation.home
+package com.hampson.dabokadmin.presentation.meal_list
 
 import com.hampson.dabokadmin.domain.model.Meal
 
