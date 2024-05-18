@@ -3,8 +3,7 @@ package com.hampson.dabokadmin.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
@@ -21,7 +20,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val mainViewModel = hiltViewModel<MainViewModel>()
-            val menuState by mainViewModel.mealsState.collectAsState()
             val navController = rememberNavController()
 
             installSplashScreen().apply {
@@ -36,7 +34,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 composable(route = Route.MAIN_SCREEN) {
                     MainScreen(
-                        navController = navController,
+                        navController = navController
                     )
                 }
             }

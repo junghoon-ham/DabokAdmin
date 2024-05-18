@@ -35,6 +35,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.hampson.dabokadmin.R
+import com.hampson.dabokadmin.presentation.ManagerViewModel
 import com.hampson.dabokadmin.presentation.admin.AdminScreen
 import com.hampson.dabokadmin.presentation.meal_list.MealListScreen
 import com.hampson.dabokadmin.presentation.register.RegisterActivity
@@ -42,7 +43,9 @@ import com.hampson.dabokadmin.presentation.settings.SettingsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Navigation(navController: NavController) {
+fun Navigation(
+    navController: NavController
+) {
     val bottomNavController = rememberNavController()
     val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -52,7 +55,7 @@ fun Navigation(navController: NavController) {
     var isFABVisible by remember { mutableStateOf(true) }
 
     LaunchedEffect(key1 = currentDestination?.route) {
-        isFABVisible = currentDestination?.route != BottomNavItems.Settings.route
+        isFABVisible = currentDestination?.route == BottomNavItems.MealList.route
 
         when (currentDestination?.route) {
             BottomNavItems.MealList.route -> selectedScreen = BottomNavItems.MealList
@@ -75,7 +78,7 @@ fun Navigation(navController: NavController) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { }) {
                         Icon(
                             imageVector = selectedScreen.icon,
                             contentDescription = null

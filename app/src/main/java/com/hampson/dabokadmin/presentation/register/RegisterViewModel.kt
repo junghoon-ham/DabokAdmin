@@ -11,6 +11,7 @@ import com.hampson.dabokadmin.domain.model.Menu
 import com.hampson.dabokadmin.domain.use_case.category.CategoryUseCases
 import com.hampson.dabokadmin.domain.use_case.meal.MealUseCases
 import com.hampson.dabokadmin.domain.use_case.menu.MenuUseCases
+import com.hampson.dabokadmin.domain.use_case.manager.ManagerUseCases
 import com.hampson.dabokadmin.domain.use_case.validation.ValidateDate
 import com.hampson.dabokadmin.domain.use_case.validation.ValidateMenus
 import com.hampson.dabokadmin.util.Result
@@ -35,6 +36,7 @@ class RegisterViewModel @Inject constructor(
     private val categoryUseCase: CategoryUseCases,
     private val menuUseCases: MenuUseCases,
     private val mealUseCases: MealUseCases,
+    private val managerUseCases: ManagerUseCases,
     private val validateDate: ValidateDate = ValidateDate(),
     private val validateMenus: ValidateMenus = ValidateMenus()
 ): ViewModel() {

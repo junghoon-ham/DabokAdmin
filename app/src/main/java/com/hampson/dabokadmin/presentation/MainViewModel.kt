@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hampson.dabokadmin.domain.use_case.meal.MealUseCases
+import com.hampson.dabokadmin.domain.use_case.manager.ManagerUseCases
 import com.hampson.dabokadmin.presentation.meal_list.MealState
 import com.hampson.dabokadmin.util.Constants.SPLASH_HOLDING_TIME
 import dagger.hilt.android.lifecycle.HiltViewModel

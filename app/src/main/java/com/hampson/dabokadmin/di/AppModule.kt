@@ -1,8 +1,10 @@
 package com.hampson.dabokadmin.di
 
+import android.content.Context
 import com.hampson.dabokadmin.data.api.CategoryApi
 import com.hampson.dabokadmin.data.api.MealApi
 import com.hampson.dabokadmin.data.api.MenuApi
+import com.hampson.dabokadmin.domain.manager.LocalUserManager
 import com.hampson.dabokadmin.domain.repository.CategoryRepository
 import com.hampson.dabokadmin.domain.repository.MealRepository
 import com.hampson.dabokadmin.domain.repository.MenuRepository
@@ -13,10 +15,15 @@ import com.hampson.dabokadmin.domain.use_case.meal.MealUseCases
 import com.hampson.dabokadmin.domain.use_case.meal.RegisterMealUseCase
 import com.hampson.dabokadmin.domain.use_case.menu.GetMenusUseCase
 import com.hampson.dabokadmin.domain.use_case.menu.MenuUseCases
+import com.hampson.dabokadmin.domain.use_case.manager.GetThemeUseCase
+import com.hampson.dabokadmin.domain.use_case.manager.ManagerUseCases
+import com.hampson.dabokadmin.domain.use_case.manager.UpdateThemeUseCase
+import com.hampson.dabokadmin.presentation.ManagerViewModel
 import com.hampson.dabokadmin.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -93,6 +100,15 @@ object AppModule {
         return MealUseCases(
             registerMealUseCase = RegisterMealUseCase(repository),
             getMealsUseCase = GetMealsUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideManagerUseCases(manager: LocalUserManager): ManagerUseCases {
+        return ManagerUseCases(
+            getThemeUseCase = GetThemeUseCase(manager),
+            updateThemeUseCase = UpdateThemeUseCase(manager)
         )
     }
 }

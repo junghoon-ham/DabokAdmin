@@ -16,10 +16,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.hampson.dabokadmin.R
+import com.hampson.dabokadmin.presentation.ManagerViewModel
 import com.hampson.dabokadmin.presentation.components.AppBarColor
 import com.hampson.dabokadmin.ui.theme.DabokAdminTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,9 +35,10 @@ class RegisterActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val navController = rememberNavController()
+            val managerViewModel = hiltViewModel<ManagerViewModel>()
+            val darkTheme by managerViewModel.darkTheme.collectAsState(initial = true)
 
-            DabokAdminTheme {
+            DabokAdminTheme(darkTheme = darkTheme) {
                 AppBarColor()
 
                 Scaffold(
