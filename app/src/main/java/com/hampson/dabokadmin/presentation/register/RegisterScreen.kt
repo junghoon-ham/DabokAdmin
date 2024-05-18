@@ -6,6 +6,7 @@ import android.content.ContextWrapper
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -23,6 +24,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
@@ -38,6 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -237,25 +240,30 @@ private fun MenuComponent(
             title = { Text(viewModel.selectedCategory.label) },
             text = {
                 val scrollState = rememberScrollState()
+                var searchActive by remember { mutableStateOf(false) }
 
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .verticalScroll(scrollState)
                 ) {
-                    OutlinedTextField(
-                        value = searchText,
-                        onValueChange = viewModel::onSearchTextChange,
+                    SearchBar(
                         modifier = Modifier.fillMaxWidth(),
+                        query = searchText,
+                        onQueryChange = viewModel::onSearchTextChange,
+                        onSearch = { searchActive = false },
+                        active = false,
+                        onActiveChange = { searchActive = false },
                         placeholder = { Text(text = stringResource(id = R.string.search_menu)) },
                         leadingIcon = {
                             Icon(
-                                imageVector = Icons.Filled.Search,
+                                imageVector = Icons.Default.Search,
                                 contentDescription = "Search Icon"
                             )
                         },
-                        singleLine = true
-                    )
+                    ) {
+
+                    }
 
                     Spacer(modifier = Modifier.width(16.dp))
 

@@ -1,5 +1,6 @@
 package com.hampson.dabokadmin.ui.effect
 
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -30,7 +31,7 @@ fun Modifier.shimmerEffect() = composed {
         initialValue = .2f,
         targetValue = .8f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1000),
+            animation = tween(500, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = ""
