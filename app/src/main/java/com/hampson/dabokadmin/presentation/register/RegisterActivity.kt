@@ -24,7 +24,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.hampson.dabokadmin.R
 import com.hampson.dabokadmin.presentation.ManagerViewModel
-import com.hampson.dabokadmin.presentation.components.AppBarColor
 import com.hampson.dabokadmin.ui.theme.DabokAdminTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,7 +38,6 @@ class RegisterActivity : ComponentActivity() {
             val darkTheme by managerViewModel.darkTheme.collectAsState(initial = true)
 
             DabokAdminTheme(darkTheme = darkTheme) {
-                AppBarColor()
 
                 Scaffold(
                     topBar = {
@@ -71,7 +69,7 @@ class RegisterActivity : ComponentActivity() {
                                 .padding(it),
                             color = MaterialTheme.colorScheme.background
                         ) {
-                            RegisterScreen()
+                            //RegisterScreen()
                         }
                     }
                 )

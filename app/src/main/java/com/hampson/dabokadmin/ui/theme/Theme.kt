@@ -9,12 +9,14 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
@@ -110,6 +112,17 @@ fun DabokAdminTheme(
             window.statusBarColor = colors.primary.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
+    }
+
+    val backgroundColor: Color = if (darkTheme) {
+        md_theme_dark_background
+    } else {
+        md_theme_light_background
+    }
+
+    val systemUiController = rememberSystemUiController()
+    LaunchedEffect(backgroundColor) {
+        systemUiController.setSystemBarsColor(backgroundColor)
     }
 
     MaterialTheme(

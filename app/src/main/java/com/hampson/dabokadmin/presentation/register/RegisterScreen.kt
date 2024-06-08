@@ -6,7 +6,6 @@ import android.content.ContextWrapper
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -24,7 +23,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
@@ -37,11 +36,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -59,6 +62,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.hampson.dabokadmin.R
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -66,8 +70,11 @@ import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(
+    navController: NavController
+) {
     val viewModel = hiltViewModel<RegisterViewModel>()
     val registerState = viewModel.registerState
     val categoriesState by viewModel.categoriesState.collectAsState()
@@ -103,57 +110,90 @@ fun RegisterScreen() {
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 16.dp, end = 16.dp)
-            .verticalScroll(scrollState)
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DateComponent(
-            viewModel = viewModel,
-            registerState = registerState
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        MenuComponent(
-            viewModel = viewModel,
-            categoryState = categoriesState,
-            menusState = menusState,
-            registerState = registerState
-        )
-
-        Spacer(modifier = Modifier.height(86.dp))
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 22.dp, start = 16.dp, end = 16.dp)
-    ) {
-        Button(
-            onClick = {
-                viewModel.onEvent(RegisterFormEvent.Submit)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-        ) {
-            Text(
-                modifier = Modifier
-                    .padding(top = 8.dp, bottom = 8.dp),
-                text = stringResource(id = R.string.register_meal)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                ),
+                title = {
+                    Text(stringResource(id = R.string.register_meal_headline))
+                },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        navController.popBackStack()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBackIosNew,
+                            contentDescription = null
+                        )
+                    }
+                },
+                actions = {}
             )
-        }
-    }
+        },
+        modifier = Modifier.fillMaxSize(),
+        content = {
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(it),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 16.dp, end = 16.dp)
+                        .verticalScroll(scrollState)
+                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
 
-    AlertDialogRegister(
-        openAlertDialog = openAlertDialog,
-        viewModel = viewModel,
-        onClose = { openAlertDialog = false },
-        onConfirm = { viewModel.registerMeal() }
+                    DateComponent(
+                        viewModel = viewModel,
+                        registerState = registerState
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    MenuComponent(
+                        viewModel = viewModel,
+                        categoryState = categoriesState,
+                        menusState = menusState,
+                        registerState = registerState
+                    )
+
+                    Spacer(modifier = Modifier.height(86.dp))
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 22.dp, start = 16.dp, end = 16.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            viewModel.onEvent(RegisterFormEvent.Submit)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .padding(top = 8.dp, bottom = 8.dp),
+                            text = stringResource(id = R.string.register_meal)
+                        )
+                    }
+                }
+
+                AlertDialogRegister(
+                    openAlertDialog = openAlertDialog,
+                    viewModel = viewModel,
+                    onClose = { openAlertDialog = false },
+                    onConfirm = { viewModel.registerMeal() }
+                )
+            }
+        }
     )
 }
 
