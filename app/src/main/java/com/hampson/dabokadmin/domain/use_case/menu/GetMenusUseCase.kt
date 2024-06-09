@@ -14,11 +14,13 @@ class GetMenusUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         typeId: Long,
-        lastId: Long
+        lastId: Long,
+        words: String?
     ): Flow<Result<Payload<List<Menu>>>> {
         return repository.getMenusResult(
-            typeId,
-            lastId
+            typeId = typeId,
+            lastId = lastId,
+            words = words
         ).flowOn(Dispatchers.Default)
     }
 }

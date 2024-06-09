@@ -22,13 +22,14 @@ class MenuRepositoryImpl @Inject constructor(
 
     override suspend fun getMenusResult(
         typeId: Long,
-        lastId: Long
+        lastId: Long?,
+        words: String?
     ): Flow<Result<Payload<List<Menu>>>> {
         return flow {
             emit(Result.Loading(true))
 
             val remoteMenusResultDto = try {
-                menuApi.getMenus(typeId, lastId)
+                menuApi.getMenus(typeId, lastId, words)
             } catch (e: HttpException) {
                 e.printStackTrace()
                 emit(Result.Error(application.getString(R.string.can_t_get_result)))

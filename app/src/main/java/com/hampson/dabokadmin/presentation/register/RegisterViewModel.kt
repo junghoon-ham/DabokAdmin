@@ -22,8 +22,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -48,31 +52,35 @@ class RegisterViewModel @Inject constructor(
     private val _categoriesState = MutableStateFlow(CategoryFormState())
     val categoriesState = _categoriesState.asStateFlow()
 
-    private val _searchText = MutableStateFlow("")
+    private val _searchText = MutableStateFlow<String?>(null)
     val searchText = _searchText.asStateFlow()
 
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
+    //private val _menusState = MutableStateFlow(MenuFormState())
+    //val menusState = searchText
+    //    .debounce(300L)
+    //    .onEach { _isSearching.update { true } }
+    //    .combine(_menusState) { text, menus ->
+    //        if (text.isBlank()) {
+    //            menus
+    //        } else {
+    //            MenuFormState(menus = menus.menus.filter {
+    //                it.doesMatchSearchQuery(text)
+    //            })
+    //        }
+    //    }
+    //    .onEach { _isSearching.update { false } }
+    //    .stateIn(
+    //        viewModelScope,
+    //        SharingStarted.WhileSubscribed(5000),
+    //        _menusState.value
+    //    )
+
     private val _menusState = MutableStateFlow(MenuFormState())
-    val menusState = searchText
-        .debounce(300L)
-        .onEach { _isSearching.update { true } }
-        .combine(_menusState) { text, menus ->
-            if (text.isBlank()) {
-                menus
-            } else {
-                MenuFormState(menus = menus.menus.filter {
-                    it.doesMatchSearchQuery(text)
-                })
-            }
-        }
-        .onEach { _isSearching.update { false } }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            _menusState.value
-        )
+    val menusState = _menusState.asStateFlow()
+
     var selectedMenus = mutableStateListOf<Menu>()
         private set
 
@@ -87,6 +95,21 @@ class RegisterViewModel @Inject constructor(
 
     init {
         loadCategoriesResult()
+
+        viewModelScope.launch {
+            searchText
+                .debounce(300L)
+                .distinctUntilChanged()
+                .collectLatest {
+                    if (it == null) return@collectLatest
+
+                    _menusState.update {
+                        MenuFormState()
+                    }
+
+                    loadMenusResult()
+                }
+        }
     }
 
     private fun loadCategoriesResult() {
@@ -115,7 +138,8 @@ class RegisterViewModel @Inject constructor(
 
             menuUseCases.getMenusUseCase(
                 typeId = selectedCategory.id,
-                lastId = menusState.value.lastId ?: -1
+                lastId = menusState.value.lastId ?: -1,
+                words = searchText.value
             ).collect { result ->
                 when (result) {
                     is Result.Error -> {
@@ -145,9 +169,7 @@ class RegisterViewModel @Inject constructor(
     }
 
     fun resetMenus() {
-        _menusState.value = _menusState.value.copy(
-            menus = listOf()
-        )
+        _menusState.value = MenuFormState()
     }
 
     fun registerMeal() {
@@ -211,7 +233,7 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
-    fun onSearchTextChange(text: String) {
+    fun onSearchTextChange(text: String?) {
         _searchText.value = text
     }
 

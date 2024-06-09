@@ -275,7 +275,7 @@ private fun MenuComponent(
         AlertDialog(
             onDismissRequest = {
                 isOpenDialog = false
-                viewModel.onSearchTextChange("")
+                viewModel.onSearchTextChange(null)
                 viewModel.resetMenus()
             },
             title = { Text(viewModel.selectedCategory.label) },
@@ -299,7 +299,7 @@ private fun MenuComponent(
                 ) {
                     SearchBar(
                         modifier = Modifier.fillMaxWidth(),
-                        query = searchText,
+                        query = searchText ?: "",
                         onQueryChange = viewModel::onSearchTextChange,
                         onSearch = { searchActive = false },
                         active = false,
@@ -377,7 +377,7 @@ private fun MenuComponent(
                 Button(
                     onClick = {
                         isOpenDialog = false
-                        viewModel.onSearchTextChange("")
+                        viewModel.onSearchTextChange(null)
                         viewModel.resetMenus()
                     }
                 ) {

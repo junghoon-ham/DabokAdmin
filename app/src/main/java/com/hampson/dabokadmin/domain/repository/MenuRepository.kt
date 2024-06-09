@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface MenuRepository {
     suspend fun getMenusResult(
         typeId: Long,
-        lastId: Long
+        lastId: Long?,
+        words: String?
     ): Flow<Result<Payload<List<Menu>>>>
 }

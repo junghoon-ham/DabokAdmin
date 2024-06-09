@@ -11,6 +11,7 @@ interface MenuApi {
     @GET("v1/menu")
     suspend fun getMenus(
         @Query("typeId") typeId: Long,
-        @Query("lastId") lastId: Long
+        @Query("lastId") lastId: Long?,
+        @Query("words") words: String?
     ): ApiResponse<List<MenuDto>>
 }
