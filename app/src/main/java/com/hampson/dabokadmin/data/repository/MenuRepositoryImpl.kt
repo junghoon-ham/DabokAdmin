@@ -3,7 +3,9 @@ package com.hampson.dabokadmin.data.repository
 import android.app.Application
 import com.hampson.dabokadmin.R
 import com.hampson.dabokadmin.data.api.MenuApi
+import com.hampson.dabokadmin.data.dto.Payload
 import com.hampson.dabokadmin.data.mapper.toMenus
+import com.hampson.dabokadmin.data.mapper.toPayload
 import com.hampson.dabokadmin.domain.model.Menu
 import com.hampson.dabokadmin.domain.repository.MenuRepository
 import com.hampson.dabokadmin.util.Result
@@ -19,13 +21,14 @@ class MenuRepositoryImpl @Inject constructor(
 ) : MenuRepository {
 
     override suspend fun getMenusResult(
-        typeId: Int
-    ): Flow<Result<List<Menu>>> {
+        typeId: Long,
+        lastId: Long
+    ): Flow<Result<Payload<List<Menu>>>> {
         return flow {
             emit(Result.Loading(true))
 
             val remoteMenusResultDto = try {
-                menuApi.getMenus(typeId)
+                menuApi.getMenus(typeId, lastId)
             } catch (e: HttpException) {
                 e.printStackTrace()
                 emit(Result.Error(application.getString(R.string.can_t_get_result)))
@@ -45,7 +48,7 @@ class MenuRepositoryImpl @Inject constructor(
 
             remoteMenusResultDto.let { menusResultDto ->
                 menusResultDto.let { menusDto ->
-                    emit(Result.Success(menusDto.payload.data?.toMenus()))
+                    emit(Result.Success(menusDto.payload.toPayload()))
                     emit(Result.Loading(false))
                     return@flow
                 }

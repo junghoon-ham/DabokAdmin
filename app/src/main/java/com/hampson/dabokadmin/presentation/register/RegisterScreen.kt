@@ -52,6 +52,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -282,6 +283,15 @@ private fun MenuComponent(
                 val scrollState = rememberScrollState()
                 var searchActive by remember { mutableStateOf(false) }
 
+                LaunchedEffect(scrollState.maxValue) {
+                    snapshotFlow { scrollState.value }
+                        .collect { value ->
+                            if (value == scrollState.maxValue && menusState.hasNext == true) {
+                                viewModel.loadMenusResult()
+                            }
+                        }
+                }
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -307,52 +317,56 @@ private fun MenuComponent(
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    if (menusState.menus.isEmpty()) {
-                        Text(
-                            text = stringResource(id = R.string.empty_menus),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 32.dp, bottom = 32.dp),
-                            fontSize = 16.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    } else {
-                        FlowRow(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            if (isSearching) {
-                                Box(
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.align(Alignment.Center)
-                                    )
-                                }
-                            } else {
-                                menusState.menus.forEach { menu ->
-                                    val isSelected = viewModel.selectedMenus.contains(menu)
+                    when {
+                        menusState.menus.isEmpty() -> {
+                            Text(
+                                text = stringResource(id = R.string.empty_menus),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 32.dp, bottom = 32.dp),
+                                fontSize = 16.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        else -> {
+                            FlowRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                if (isSearching) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize()
+                                    ) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.align(Alignment.Center)
+                                        )
+                                    }
+                                } else {
+                                    menusState.menus.forEach { menu ->
+                                        val isSelected = viewModel.selectedMenus.contains(menu)
 
-                                    FilterChip(
-                                        selected = isSelected,
-                                        onClick = {
-                                            viewModel.onEvent(RegisterFormEvent.MenuChanged(menu))
-                                        },
-                                        label = { Text(text = menu.name) },
-                                        leadingIcon = if (isSelected) {
-                                            {
-                                                Icon(
-                                                    imageVector = Icons.Filled.Done,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(
-                                                        FilterChipDefaults.IconSize)
-                                                )
+                                        FilterChip(
+                                            selected = isSelected,
+                                            onClick = {
+                                                viewModel.onEvent(RegisterFormEvent.MenuChanged(menu))
+                                            },
+                                            label = { Text(text = menu.name) },
+                                            leadingIcon = if (isSelected) {
+                                                {
+                                                    Icon(
+                                                        imageVector = Icons.Filled.Done,
+                                                        contentDescription = null,
+                                                        modifier = Modifier.size(
+                                                            FilterChipDefaults.IconSize)
+                                                    )
+                                                }
+                                            } else {
+                                                null
                                             }
-                                        } else {
-                                            null
-                                        }
-                                    )
+                                        )
 
-                                    Spacer(modifier = Modifier.width(6.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                    }
                                 }
                             }
                         }

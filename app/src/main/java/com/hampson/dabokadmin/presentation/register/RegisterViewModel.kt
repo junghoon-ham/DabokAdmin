@@ -107,17 +107,36 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
-    private fun loadMenusResult(typeId: Int) {
+    fun loadMenusResult() {
         viewModelScope.launch {
-            menuUseCases.getMenusUseCase(typeId).collect { result ->
+            _menusState.update {
+                it.copy(isLoading = true)
+            }
+
+            menuUseCases.getMenusUseCase(
+                typeId = selectedCategory.id,
+                lastId = menusState.value.lastId ?: -1
+            ).collect { result ->
                 when (result) {
-                    is Result.Error -> Unit
-                    is Result.Loading -> Unit
+                    is Result.Error -> {
+                        _menusState.update {
+                            it.copy(isLoading = false)
+                        }
+                    }
+                    is Result.Loading -> {
+                        _menusState.update {
+                            it.copy(isLoading = result.isLoading)
+                        }
+                    }
                     is Result.Success -> {
                         result.data?.let { menus ->
-                            _menusState.value = _menusState.value.copy(
-                                menus = menus
-                            )
+                            _menusState.update {
+                                it.copy(
+                                    menus = menusState.value.menus + (menus.data ?: emptyList()).shuffled(),
+                                    lastId = menus.data?.lastOrNull()?.id,
+                                    hasNext = menus.hasNext
+                                )
+                            }
                         }
                     }
                 }
@@ -198,7 +217,7 @@ class RegisterViewModel @Inject constructor(
 
     fun onSelectedCategory(category: Category) {
         selectedCategory = category
-        loadMenusResult(category.id.toInt())
+        loadMenusResult()
     }
 
     private fun onSelectedMenu(menu: Menu) {
