@@ -3,11 +3,8 @@ package com.hampson.dabokadmin.data.repository
 import android.app.Application
 import com.hampson.dabokadmin.R
 import com.hampson.dabokadmin.data.api.MealApi
-import com.hampson.dabokadmin.data.dto.MealDto
 import com.hampson.dabokadmin.data.dto.MealRegistrationRequest
-import com.hampson.dabokadmin.data.mapper.toMeal
 import com.hampson.dabokadmin.data.mapper.toMeals
-import com.hampson.dabokadmin.data.mapper.toMenus
 import com.hampson.dabokadmin.domain.model.Meal
 import com.hampson.dabokadmin.domain.repository.MealRepository
 import com.hampson.dabokadmin.util.Result
@@ -66,12 +63,14 @@ class MealRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMealsResult(): Flow<Result<List<Meal>>> {
+    override suspend fun getMealsResult(
+        date: String
+    ): Flow<Result<List<Meal>>> {
         return flow {
             emit(Result.Loading(true))
 
             val remoteMealsResultDto = try {
-                mealApi.getMeals()
+                mealApi.getMeals(date)
             } catch (e: HttpException) {
                 e.printStackTrace()
                 emit(Result.Error(application.getString(R.string.can_t_get_result)))

@@ -101,7 +101,7 @@ fun RegisterScreen(
 
     LaunchedEffect(key1 = success) {
         viewModel.successEvent.collect {  message ->
-            activity?.finish()
+            navController.navigateUp()
 
             Toast.makeText(
                 context,
@@ -122,7 +122,7 @@ fun RegisterScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.popBackStack()
+                        navController.navigateUp()
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBackIosNew,

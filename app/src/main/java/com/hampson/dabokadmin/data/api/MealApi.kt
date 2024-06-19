@@ -6,6 +6,7 @@ import com.hampson.dabokadmin.data.dto.MealRegistrationRequest
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface MealApi {
 
@@ -14,6 +15,8 @@ interface MealApi {
         @Body mealRequest: MealRegistrationRequest
     ): ApiResponse<Unit>
 
-    @GET("v1/meal/day/50")
-    suspend fun getMeals(): ApiResponse<List<MealDto>>
+    @GET("v1/meal/list?size=50")
+    suspend fun getMeals(
+        @Query("date") date: String
+    ): ApiResponse<List<MealDto>>
 }

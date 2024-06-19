@@ -10,5 +10,5 @@ interface MealRepository {
         menuIds: List<Long>
     ): Flow<Result<Unit>>
 
-    suspend fun getMealsResult(): Flow<Result<List<Meal>>>
+    suspend fun getMealsResult(date: String): Flow<Result<List<Meal>>>
 }
