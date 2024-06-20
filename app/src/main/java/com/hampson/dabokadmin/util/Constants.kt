@@ -7,4 +7,5 @@ object Constants {
     const val APP_THEME = "appTheme"
 
     const val SPLASH_HOLDING_TIME = 2000L
+    const val PAGE_SIZE = 50
 }

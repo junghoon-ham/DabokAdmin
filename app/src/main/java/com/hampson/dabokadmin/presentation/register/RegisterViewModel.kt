@@ -198,6 +198,7 @@ class RegisterViewModel @Inject constructor(
                     dateError = null
                 )
             }
+
             is RegisterFormEvent.MenuChanged -> {
                 onSelectedMenu(event.menu)
                 registerState = registerState.copy(
@@ -205,6 +206,7 @@ class RegisterViewModel @Inject constructor(
                     menusError = null
                 )
             }
+
             is RegisterFormEvent.Submit -> {
                 validationCheck()
             }

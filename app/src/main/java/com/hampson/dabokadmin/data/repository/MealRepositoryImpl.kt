@@ -64,13 +64,17 @@ class MealRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getMealsResult(
-        date: String
+        date: String,
+        size: Int
     ): Flow<Result<List<Meal>>> {
         return flow {
             emit(Result.Loading(true))
 
             val remoteMealsResultDto = try {
-                mealApi.getMeals(date)
+                mealApi.getMeals(
+                    date = date,
+                    size = size
+                )
             } catch (e: HttpException) {
                 e.printStackTrace()
                 emit(Result.Error(application.getString(R.string.can_t_get_result)))
@@ -91,6 +95,44 @@ class MealRepositoryImpl @Inject constructor(
             remoteMealsResultDto.let { mealsResultDto ->
                 mealsResultDto.let { mealsDto ->
                     emit(Result.Success(mealsDto.payload.data?.toMeals()))
+                    emit(Result.Loading(false))
+                    return@flow
+                }
+            }
+
+            emit(Result.Error(application.getString(R.string.can_t_get_result)))
+            emit(Result.Loading(false))
+        }
+    }
+
+    override suspend fun deleteMeal(date: String): Flow<Result<Unit>> {
+        return flow {
+            emit(Result.Loading(true))
+
+            val remoteMealsRegistrationDto = try {
+                mealApi.deleteMeal(
+                    date = date
+                )
+            } catch (e: HttpException) {
+                e.printStackTrace()
+                emit(Result.Error(application.getString(R.string.can_t_get_result)))
+                emit(Result.Loading(false))
+                return@flow
+            } catch (e: IOException) {
+                e.printStackTrace()
+                emit(Result.Error(application.getString(R.string.can_t_get_result)))
+                emit(Result.Loading(false))
+                return@flow
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Result.Error(application.getString(R.string.can_t_get_result)))
+                emit(Result.Loading(false))
+                return@flow
+            }
+
+            remoteMealsRegistrationDto.let { mealDto ->
+                mealDto.let {
+                    emit(Result.Success(Unit))
                     emit(Result.Loading(false))
                     return@flow
                 }

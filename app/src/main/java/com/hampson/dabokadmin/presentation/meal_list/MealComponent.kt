@@ -39,10 +39,11 @@ import com.google.accompanist.flowlayout.SizeMode
 import com.hampson.dabokadmin.R
 import com.hampson.dabokadmin.domain.model.Meal
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MealComponent(
-    meal: Meal
+    meal: Meal,
+    onDelete: () -> Unit,
+    onUpdate: () -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
 
@@ -64,9 +65,7 @@ fun MealComponent(
                     )
                 )
         ) {
-            Column(
-                modifier = Modifier
-            ) {
+            Column {
                 Text(
                     text = meal.date,
                     style = MaterialTheme.typography.titleLarge
@@ -75,17 +74,16 @@ fun MealComponent(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 FlowRow(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    mainAxisSpacing = 6.dp
                 ) {
                     meal.menuList.forEach { menu ->
                         FilterChip(
                             selected = false,
-                            onClick = {},
+                            onClick = { },
                             label = { Text(text = menu.name) },
                             leadingIcon = null
                         )
-
-                        Spacer(modifier = Modifier.width(6.dp))
                     }
                 }
 
@@ -95,10 +93,10 @@ fun MealComponent(
                     FlowRow(
                         modifier = Modifier.fillMaxWidth(),
                         mainAxisSpacing = 8.dp,
-                        mainAxisSize = SizeMode.Wrap
                     ) {
                         AssistChip(
-                            onClick = {  },
+                            modifier = Modifier.height(40.dp),
+                            onClick = { onDelete() },
                             colors = AssistChipDefaults.assistChipColors(
                                 leadingIconContentColor = MaterialTheme.colorScheme.error,
                                 labelColor = MaterialTheme.colorScheme.error,
@@ -115,6 +113,7 @@ fun MealComponent(
                         )
 
                         AssistChip(
+                            modifier = Modifier.height(40.dp),
                             onClick = {  },
                             colors = AssistChipDefaults.assistChipColors(
                                 leadingIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,

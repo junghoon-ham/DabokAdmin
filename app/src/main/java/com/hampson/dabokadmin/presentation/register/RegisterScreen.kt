@@ -191,7 +191,10 @@ fun RegisterScreen(
                     openAlertDialog = openAlertDialog,
                     viewModel = viewModel,
                     onClose = { openAlertDialog = false },
-                    onConfirm = { viewModel.registerMeal() }
+                    onConfirm = {
+                        openAlertDialog = false
+                        viewModel.registerMeal()
+                    }
                 )
             }
         }
