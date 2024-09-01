@@ -55,9 +55,11 @@ fun Navigation() {
             )
         }
 
-        composable(route = Route.REGISTER_SCREEN) {
+        composable(route = "${Route.REGISTER_SCREEN}?date={date}") { backStackEntry ->
+            val date = backStackEntry.arguments?.getString("date")
             RegisterScreen(
-                navController = navController
+                navController = navController,
+                date = date
             )
         }
     }

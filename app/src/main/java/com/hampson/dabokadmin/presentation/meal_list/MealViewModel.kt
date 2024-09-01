@@ -2,12 +2,14 @@ package com.hampson.dabokadmin.presentation.meal_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hampson.dabokadmin.domain.model.Meal
 import com.hampson.dabokadmin.domain.use_case.meal.MealUseCases
 import com.hampson.dabokadmin.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -25,6 +27,9 @@ class MealViewModel @Inject constructor(
     private val _deleteSuccess = MutableStateFlow(false)
     val deleteSuccess = _deleteSuccess.asSharedFlow()
 
+    private val _navigateToRegisterScreen = MutableSharedFlow<Meal>()
+    val navigateToRegisterScreen: SharedFlow<Meal> get() = _navigateToRegisterScreen
+
     private val _successEvent = MutableSharedFlow<String>()
     val successEvent = _successEvent.asSharedFlow()
 
@@ -39,6 +44,11 @@ class MealViewModel @Inject constructor(
             }
             is MealFormEvent.OnUpdateMeal -> {
 
+            }
+            is MealFormEvent.OnCopyMeal -> {
+                viewModelScope.launch {
+                    _navigateToRegisterScreen.emit(event.meal)
+                }
             }
         }
     }
@@ -79,11 +89,11 @@ class MealViewModel @Inject constructor(
                         _deleteSuccess.value = true
                         _successEvent.emit("삭제가 완료되었습니다.")
 
-                        //_mealsState.update { currentState ->
-                        //    currentState.copy(
-                        //        meals = currentState.meals.filterNot { it.date == date }
-                        //    )
-                        //}
+                        _mealsState.update { currentState ->
+                            currentState.copy(
+                                meals = currentState.meals.filterNot { it.date == date }
+                            )
+                        }
                     }
                 }
             }

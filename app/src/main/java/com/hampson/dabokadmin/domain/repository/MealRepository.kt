@@ -10,6 +10,10 @@ interface MealRepository {
         menuIds: List<Long>
     ): Flow<Result<Unit>>
 
+    suspend fun getMealResult(
+        date: String
+    ): Flow<Result<Meal>>
+
     suspend fun getMealsResult(
         date: String,
         size: Int

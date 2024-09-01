@@ -126,7 +126,7 @@ fun BottomNavigationScreens(
         startDestination = BottomScreens.MealListScreen.rout,
     ) {
         composable(route = BottomScreens.MealListScreen.rout) {
-            MealListScreen(navController = bottomNavController)
+            MealListScreen(navController = navController)
         }
         composable(route = BottomScreens.AdminScreen.rout) {
             AdminScreen(navController = bottomNavController)

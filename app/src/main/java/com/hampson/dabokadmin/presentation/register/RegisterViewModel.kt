@@ -17,6 +17,7 @@ import com.hampson.dabokadmin.domain.use_case.validation.ValidateMenus
 import com.hampson.dabokadmin.util.Result
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -161,6 +162,28 @@ class RegisterViewModel @Inject constructor(
                                     hasNext = menus.hasNext
                                 )
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun loadMealResult(date: String) {
+        viewModelScope.launch {
+            mealUseCases.getMealUseCase(
+                date = date
+            ).collect { result ->
+                when (result) {
+                    is Result.Error -> Unit
+                    is Result.Loading -> Unit
+                    is Result.Success -> {
+                        result.data?.let { meals ->
+                            selectedMenus.addAll(meals.menuList)
+                            registerState = registerState.copy(
+                                menus = selectedMenus,
+                                menusError = null
+                            )
                         }
                     }
                 }

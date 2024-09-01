@@ -74,7 +74,8 @@ import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
-    navController: NavController
+    navController: NavController,
+    date: String?
 ) {
     val viewModel = hiltViewModel<RegisterViewModel>()
     val registerState = viewModel.registerState
@@ -108,6 +109,12 @@ fun RegisterScreen(
                 message,
                 Toast.LENGTH_SHORT
             ).show()
+        }
+    }
+
+    LaunchedEffect(key1 = date) {
+        if (!date.isNullOrEmpty()) {
+            viewModel.loadMealResult(date)
         }
     }
 
@@ -346,7 +353,7 @@ private fun MenuComponent(
                                     }
                                 } else {
                                     menusState.menus.forEach { menu ->
-                                        val isSelected = viewModel.selectedMenus.contains(menu)
+                                        val isSelected = viewModel.selectedMenus.any { it.id == menu.id }
 
                                         FilterChip(
                                             selected = isSelected,

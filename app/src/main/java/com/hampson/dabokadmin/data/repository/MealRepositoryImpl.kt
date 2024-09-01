@@ -4,6 +4,7 @@ import android.app.Application
 import com.hampson.dabokadmin.R
 import com.hampson.dabokadmin.data.api.MealApi
 import com.hampson.dabokadmin.data.dto.MealRegistrationRequest
+import com.hampson.dabokadmin.data.mapper.toMeal
 import com.hampson.dabokadmin.data.mapper.toMeals
 import com.hampson.dabokadmin.domain.model.Meal
 import com.hampson.dabokadmin.domain.repository.MealRepository
@@ -53,6 +54,51 @@ class MealRepositoryImpl @Inject constructor(
             remoteMealsRegistrationDto.let { mealRegistrationDto ->
                 mealRegistrationDto.let {
                     emit(Result.Success(Unit))
+                    emit(Result.Loading(false))
+                    return@flow
+                }
+            }
+
+            emit(Result.Error(application.getString(R.string.can_t_get_result)))
+            emit(Result.Loading(false))
+        }
+    }
+
+    override suspend fun getMealResult(
+        date: String
+    ): Flow<Result<Meal>> {
+        return flow {
+            emit(Result.Loading(true))
+
+            val remoteMealResultDto = try {
+                mealApi.getMeal(date = date)
+            } catch (e: HttpException) {
+                e.printStackTrace()
+                emit(Result.Error(application.getString(R.string.can_t_get_result)))
+                emit(Result.Loading(false))
+                return@flow
+            } catch (e: IOException) {
+                e.printStackTrace()
+                emit(Result.Error(application.getString(R.string.can_t_get_result)))
+                emit(Result.Loading(false))
+                return@flow
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Result.Error(application.getString(R.string.can_t_get_result)))
+                emit(Result.Loading(false))
+                return@flow
+            }
+
+            remoteMealResultDto.let { mealResultDto ->
+                mealResultDto.let { mealDto ->
+                    emit(
+                        Result.Success(
+                            Meal(
+                                date = mealDto.payload.date ?: "",
+                                menuList = mealDto.payload.menuList ?: listOf()
+                            )
+                        )
+                    )
                     emit(Result.Loading(false))
                     return@flow
                 }

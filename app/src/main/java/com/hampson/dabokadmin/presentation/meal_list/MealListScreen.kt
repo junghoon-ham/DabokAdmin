@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,7 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
-import com.hampson.dabokadmin.presentation.main.MainViewModel
+import com.hampson.dabokadmin.presentation.navigation.Route
 import com.hampson.dabokadmin.ui.effect.MealShimmerComponent
 
 @Composable
@@ -39,7 +38,9 @@ fun MealListScreen(navController: NavController) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current as? Activity
 
-    val success by viewModel.deleteSuccess.collectAsState(false)
+    val successDelete by viewModel.deleteSuccess.collectAsState(false)
+
+    val navigateToRegisterScreen by viewModel.navigateToRegisterScreen.collectAsState(Unit)
 
     BackHandler(enabled = true) {
         context?.finish()
@@ -53,15 +54,23 @@ fun MealListScreen(navController: NavController) {
         })
     }
 
-    LaunchedEffect(success) {
+    LaunchedEffect(successDelete) {
         viewModel.successEvent.collect {  message ->
-            navController.navigateUp()
+            //navController.navigateUp()
+//
+            //Toast.makeText(
+            //    context,
+            //    message,
+            //    Toast.LENGTH_SHORT
+            //).show()
+        }
+    }
 
-            Toast.makeText(
-                context,
-                message,
-                Toast.LENGTH_SHORT
-            ).show()
+    LaunchedEffect(navigateToRegisterScreen) {
+        viewModel.navigateToRegisterScreen.collect { meal ->
+            if (navigateToRegisterScreen != Unit) {
+                navController.navigate(route = "${Route.REGISTER_SCREEN}?date=${meal.date}")
+            }
         }
     }
 
@@ -96,6 +105,7 @@ fun MealListScreen(navController: NavController) {
                                 viewModel.onEvent(MealFormEvent.OnDeleteMeal(meal.date))
                             },
                             onUpdate = { viewModel.onEvent(MealFormEvent.OnUpdateMeal(meal.date)) },
+                            onCopy = { viewModel.onEvent(MealFormEvent.OnCopyMeal(meal)) }
                         )
                     }
                 }

@@ -17,6 +17,11 @@ interface MealApi {
         @Body mealRequest: MealRegistrationRequest
     ): ApiResponse<Unit>
 
+    @GET("v1/meal/{date}")
+    suspend fun getMeal(
+        @Path("date") date: String
+    ): ApiResponse<MealDto>
+
     @GET("v1/meal/list")
     suspend fun getMeals(
         @Query("date") date: String,
