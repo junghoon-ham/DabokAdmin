@@ -9,11 +9,17 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.PUT
 
 interface MealApi {
 
     @POST("v1/meal")
     suspend fun registerMeal(
+        @Body mealRequest: MealRegistrationRequest
+    ): ApiResponse<Unit>
+
+    @PUT("v1/meal")
+    suspend fun updateMeal(
         @Body mealRequest: MealRegistrationRequest
     ): ApiResponse<Unit>
 

@@ -169,7 +169,10 @@ class RegisterViewModel @Inject constructor(
         }
     }
 
-    fun loadMealResult(date: String) {
+    fun loadMealResult(
+        date: String,
+        userActionType: UserActionType
+    ) {
         viewModelScope.launch {
             mealUseCases.getMealUseCase(
                 date = date
@@ -178,9 +181,10 @@ class RegisterViewModel @Inject constructor(
                     is Result.Error -> Unit
                     is Result.Loading -> Unit
                     is Result.Success -> {
-                        result.data?.let { meals ->
-                            selectedMenus.addAll(meals.menuList)
+                        result.data?.let { meal ->
+                            selectedMenus.addAll(meal.menuList)
                             registerState = registerState.copy(
+                                date = if (userActionType == UserActionType.UPDATE) meal.date else "",
                                 menus = selectedMenus,
                                 menusError = null
                             )
@@ -207,6 +211,24 @@ class RegisterViewModel @Inject constructor(
                     is Result.Success -> {
                         _registerSuccess.value = true
                         _successEvent.emit("식단이 등록되었습니다.")
+                    }
+                }
+            }
+        }
+    }
+
+    fun updateMeal() {
+        viewModelScope.launch {
+            mealUseCases.updateMealUseCase(
+                date = registerState.date,
+                menuIds = registerState.menus.map { it.id }
+            ).collect { result ->
+                when (result) {
+                    is Result.Error -> Unit
+                    is Result.Loading -> Unit
+                    is Result.Success -> {
+                        _registerSuccess.value = true
+                        _successEvent.emit("식단이 수정되었습니다.")
                     }
                 }
             }

@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.hampson.dabokadmin.presentation.ManagerViewModel
 import com.hampson.dabokadmin.presentation.navigation.Route
 import com.hampson.dabokadmin.presentation.register.RegisterScreen
+import com.hampson.dabokadmin.presentation.register.UserActionType
 import com.hampson.dabokadmin.ui.theme.DabokAdminTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -55,11 +56,16 @@ fun Navigation() {
             )
         }
 
-        composable(route = "${Route.REGISTER_SCREEN}?date={date}") { backStackEntry ->
+        composable(route = "${Route.REGISTER_SCREEN}/{userActionType}?date={date}") { backStackEntry ->
             val date = backStackEntry.arguments?.getString("date")
+
+            val userActionTypeStr = backStackEntry.arguments?.getString("userActionType")
+            val userActionType = userActionTypeStr?.let { UserActionType.valueOf(it) }
+
             RegisterScreen(
                 navController = navController,
-                date = date
+                date = date,
+                userActionType = userActionType ?: UserActionType.REGISTER
             )
         }
     }

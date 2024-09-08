@@ -34,6 +34,7 @@ import com.hampson.dabokadmin.presentation.meal_list.MealListScreen
 import com.hampson.dabokadmin.presentation.navigation.BottomNavItems
 import com.hampson.dabokadmin.presentation.navigation.BottomScreens
 import com.hampson.dabokadmin.presentation.navigation.Route
+import com.hampson.dabokadmin.presentation.register.UserActionType
 import com.hampson.dabokadmin.presentation.settings.SettingsScreen
 
 @Composable
@@ -81,7 +82,7 @@ fun MainScreen(
             ) {
                 AddItemFAB(
                     onClick = {
-                        navController.navigate(route = Route.REGISTER_SCREEN)
+                        navController.navigate(route = "${Route.REGISTER_SCREEN}/${UserActionType.REGISTER}")
                     }
                 )
             }
@@ -107,7 +108,7 @@ private fun AddItemFAB(onClick: () -> Unit) {
         },
         text = {
             Text(
-                text = stringResource(id = R.string.register_meal)
+                text = stringResource(id = R.string.register_meal_action)
             )
         }
     )

@@ -27,6 +27,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.hampson.dabokadmin.presentation.navigation.Route
+import com.hampson.dabokadmin.presentation.register.UserActionType
 import com.hampson.dabokadmin.ui.effect.MealShimmerComponent
 
 @Composable
@@ -41,6 +42,7 @@ fun MealListScreen(navController: NavController) {
     val successDelete by viewModel.deleteSuccess.collectAsState(false)
 
     val navigateToRegisterScreen by viewModel.navigateToRegisterScreen.collectAsState(Unit)
+    val navigateToUpdateScreen by viewModel.navigateToUpdateScreen.collectAsState(Unit)
 
     BackHandler(enabled = true) {
         context?.finish()
@@ -69,7 +71,15 @@ fun MealListScreen(navController: NavController) {
     LaunchedEffect(navigateToRegisterScreen) {
         viewModel.navigateToRegisterScreen.collect { meal ->
             if (navigateToRegisterScreen != Unit) {
-                navController.navigate(route = "${Route.REGISTER_SCREEN}?date=${meal.date}")
+                navController.navigate(route = "${Route.REGISTER_SCREEN}/${UserActionType.REGISTER}?date=${meal.date}")
+            }
+        }
+    }
+
+    LaunchedEffect(navigateToUpdateScreen) {
+        viewModel.navigateToUpdateScreen.collect { meal ->
+            if (navigateToUpdateScreen != Unit) {
+                navController.navigate(route = "${Route.REGISTER_SCREEN}/${UserActionType.UPDATE}?date=${meal.date}")
             }
         }
     }
@@ -104,7 +114,7 @@ fun MealListScreen(navController: NavController) {
                                 isVisible = false
                                 viewModel.onEvent(MealFormEvent.OnDeleteMeal(meal.date))
                             },
-                            onUpdate = { viewModel.onEvent(MealFormEvent.OnUpdateMeal(meal.date)) },
+                            onUpdate = { viewModel.onEvent(MealFormEvent.OnUpdateMeal(meal)) },
                             onCopy = { viewModel.onEvent(MealFormEvent.OnCopyMeal(meal)) }
                         )
                     }

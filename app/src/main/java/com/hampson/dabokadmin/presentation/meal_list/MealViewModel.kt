@@ -30,6 +30,9 @@ class MealViewModel @Inject constructor(
     private val _navigateToRegisterScreen = MutableSharedFlow<Meal>()
     val navigateToRegisterScreen: SharedFlow<Meal> get() = _navigateToRegisterScreen
 
+    private val _navigateToUpdateScreen = MutableSharedFlow<Meal>()
+    val navigateToUpdateScreen: SharedFlow<Meal> get() = _navigateToUpdateScreen
+
     private val _successEvent = MutableSharedFlow<String>()
     val successEvent = _successEvent.asSharedFlow()
 
@@ -43,7 +46,9 @@ class MealViewModel @Inject constructor(
                 deleteMeal(event.date)
             }
             is MealFormEvent.OnUpdateMeal -> {
-
+                viewModelScope.launch {
+                    _navigateToUpdateScreen.emit(event.meal)
+                }
             }
             is MealFormEvent.OnCopyMeal -> {
                 viewModelScope.launch {

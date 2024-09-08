@@ -64,6 +64,50 @@ class MealRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateMeal(
+        date: String,
+        menuIds: List<Long>
+    ): Flow<Result<Unit>> {
+        return flow {
+            emit(Result.Loading(true))
+
+            val remoteMealsRegistrationDto = try {
+                mealApi.updateMeal(
+                    MealRegistrationRequest(
+                        date = date,
+                        menuIdList = menuIds
+                    )
+                )
+            } catch (e: HttpException) {
+                e.printStackTrace()
+                emit(Result.Error(application.getString(R.string.can_t_get_result)))
+                emit(Result.Loading(false))
+                return@flow
+            } catch (e: IOException) {
+                e.printStackTrace()
+                emit(Result.Error(application.getString(R.string.can_t_get_result)))
+                emit(Result.Loading(false))
+                return@flow
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Result.Error(application.getString(R.string.can_t_get_result)))
+                emit(Result.Loading(false))
+                return@flow
+            }
+
+            remoteMealsRegistrationDto.let { mealRegistrationDto ->
+                mealRegistrationDto.let {
+                    emit(Result.Success(Unit))
+                    emit(Result.Loading(false))
+                    return@flow
+                }
+            }
+
+            emit(Result.Error(application.getString(R.string.can_t_get_result)))
+            emit(Result.Loading(false))
+        }
+    }
+
     override suspend fun getMealResult(
         date: String
     ): Flow<Result<Meal>> {
@@ -189,29 +233,3 @@ class MealRepositoryImpl @Inject constructor(
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

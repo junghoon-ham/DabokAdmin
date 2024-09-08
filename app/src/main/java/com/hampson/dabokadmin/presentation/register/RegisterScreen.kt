@@ -75,7 +75,8 @@ import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 @Composable
 fun RegisterScreen(
     navController: NavController,
-    date: String?
+    date: String?,
+    userActionType: UserActionType
 ) {
     val viewModel = hiltViewModel<RegisterViewModel>()
     val registerState = viewModel.registerState
@@ -114,7 +115,10 @@ fun RegisterScreen(
 
     LaunchedEffect(key1 = date) {
         if (!date.isNullOrEmpty()) {
-            viewModel.loadMealResult(date)
+            viewModel.loadMealResult(
+                date = date,
+                userActionType = userActionType
+            )
         }
     }
 
@@ -125,7 +129,7 @@ fun RegisterScreen(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 title = {
-                    Text(stringResource(id = R.string.register_meal_headline))
+                    Text(userActionType.getAppBarTitle(context))
                 },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -158,7 +162,8 @@ fun RegisterScreen(
 
                     DateComponent(
                         viewModel = viewModel,
-                        registerState = registerState
+                        registerState = registerState,
+                        userActionType
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -189,7 +194,7 @@ fun RegisterScreen(
                         Text(
                             modifier = Modifier
                                 .padding(top = 8.dp, bottom = 8.dp),
-                            text = stringResource(id = R.string.register_meal)
+                            text = userActionType.getActionTitle(context)
                         )
                     }
                 }
@@ -200,8 +205,14 @@ fun RegisterScreen(
                     onClose = { openAlertDialog = false },
                     onConfirm = {
                         openAlertDialog = false
-                        viewModel.registerMeal()
-                    }
+
+                        when (userActionType) {
+                            UserActionType.REGISTER -> viewModel.registerMeal()
+                            UserActionType.UPDATE -> viewModel.updateMeal()
+                        }
+                    },
+                    userActionType = userActionType,
+                    context = context
                 )
             }
         }
@@ -212,7 +223,8 @@ fun RegisterScreen(
 @Composable
 private fun DateComponent(
     viewModel: RegisterViewModel,
-    registerState: RegisterFormState
+    registerState: RegisterFormState,
+    userActionType: UserActionType
 ) {
     val calendarState = rememberSheetState()
 
@@ -259,9 +271,10 @@ private fun DateComponent(
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Button(onClick = {
-            calendarState.show()
-        }) {
+        Button(
+            onClick = { calendarState.show() },
+            enabled = userActionType != UserActionType.UPDATE
+        ) {
             Text(text = stringResource(id = R.string.select_date))
         }
     }
@@ -483,7 +496,9 @@ fun AlertDialogRegister(
     openAlertDialog: Boolean,
     onClose: () -> Unit,
     onConfirm: () -> Unit,
-    viewModel: RegisterViewModel
+    viewModel: RegisterViewModel,
+    userActionType: UserActionType,
+    context: Context
 ) {
     if (openAlertDialog) {
         AlertDialog(
@@ -506,7 +521,7 @@ fun AlertDialogRegister(
             },
             title = {
                 Text(
-                    text = stringResource(id = R.string.check_register_meal),
+                    text = userActionType.getCheckActionMessage(context),
                 )
             },
             text = {

@@ -20,6 +20,7 @@ import com.hampson.dabokadmin.domain.use_case.manager.ManagerUseCases
 import com.hampson.dabokadmin.domain.use_case.manager.UpdateThemeUseCase
 import com.hampson.dabokadmin.domain.use_case.meal.DeleteMealUseCase
 import com.hampson.dabokadmin.domain.use_case.meal.GetMealUseCase
+import com.hampson.dabokadmin.domain.use_case.meal.UpdateMealUseCase
 import com.hampson.dabokadmin.presentation.ManagerViewModel
 import com.hampson.dabokadmin.util.Constants.BASE_URL
 import dagger.Module
@@ -101,6 +102,7 @@ object AppModule {
     fun provideMealUseCases(repository: MealRepository): MealUseCases {
         return MealUseCases(
             registerMealUseCase = RegisterMealUseCase(repository),
+            updateMealUseCase = UpdateMealUseCase(repository),
             getMealUseCase = GetMealUseCase(repository),
             getMealsUseCase = GetMealsUseCase(repository),
             deleteMealUseCase = DeleteMealUseCase(repository)
