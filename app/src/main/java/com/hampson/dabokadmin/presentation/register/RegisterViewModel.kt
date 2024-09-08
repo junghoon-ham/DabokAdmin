@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hampson.dabokadmin.domain.model.Category
+import com.hampson.dabokadmin.domain.model.Meal
 import com.hampson.dabokadmin.domain.model.Menu
 import com.hampson.dabokadmin.domain.use_case.category.CategoryUseCases
 import com.hampson.dabokadmin.domain.use_case.meal.MealUseCases
@@ -20,7 +21,9 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -93,6 +96,9 @@ class RegisterViewModel @Inject constructor(
 
     private val _successEvent = MutableSharedFlow<String>()
     val successEvent = _successEvent.asSharedFlow()
+
+    private val _hasMealPlanForDate = MutableStateFlow<Meal?>(null)
+    val hasMealPlanForDate: StateFlow<Meal?> = _hasMealPlanForDate
 
     init {
         loadCategoriesResult()
@@ -188,6 +194,24 @@ class RegisterViewModel @Inject constructor(
                                 menus = selectedMenus,
                                 menusError = null
                             )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun getMealPlanStatus(date: String) {
+        viewModelScope.launch {
+            mealUseCases.getMealUseCase(
+                date = date
+            ).collect { result ->
+                when (result) {
+                    is Result.Error -> onEvent(RegisterFormEvent.DateChanged(date))
+                    is Result.Loading -> Unit
+                    is Result.Success -> {
+                        result.data?.let { meal ->
+                            _hasMealPlanForDate.emit(meal)
                         }
                     }
                 }

@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.hampson.dabokadmin.R
+import com.hampson.dabokadmin.presentation.navigation.Route
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
@@ -87,15 +88,17 @@ fun RegisterScreen(
     val context = LocalContext.current
     val activity = context.findActivity()
 
-    var openAlertDialog by remember { mutableStateOf(false) }
+    var openAlertDialogRegister by remember { mutableStateOf(false) }
+    var openAlertDialogChangePlan by remember { mutableStateOf(false) }
 
     val success by viewModel.registerSuccess.collectAsState(false)
+    val hasMealPlanForDate by viewModel.hasMealPlanForDate.collectAsState(null)
 
     LaunchedEffect(key1 = context) {
         viewModel.validationEvents.collect { event ->
             when (event) {
                 is RegisterViewModel.ValidationEvent.Success -> {
-                    openAlertDialog = true
+                    openAlertDialogRegister = true
                 }
             }
         }
@@ -120,6 +123,10 @@ fun RegisterScreen(
                 userActionType = userActionType
             )
         }
+    }
+
+    LaunchedEffect(key1 = hasMealPlanForDate) {
+        if (hasMealPlanForDate != null) openAlertDialogChangePlan = true
     }
 
     Scaffold(
@@ -200,11 +207,11 @@ fun RegisterScreen(
                 }
 
                 AlertDialogRegister(
-                    openAlertDialog = openAlertDialog,
+                    openAlertDialog = openAlertDialogRegister,
                     viewModel = viewModel,
-                    onClose = { openAlertDialog = false },
+                    onClose = { openAlertDialogRegister = false },
                     onConfirm = {
-                        openAlertDialog = false
+                        openAlertDialogRegister = false
 
                         when (userActionType) {
                             UserActionType.REGISTER -> viewModel.registerMeal()
@@ -213,6 +220,19 @@ fun RegisterScreen(
                     },
                     userActionType = userActionType,
                     context = context
+                )
+
+                AlertDialogChangePlan(
+                    openAlertDialog = openAlertDialogChangePlan,
+                    onClose = { openAlertDialogChangePlan = false },
+                    onConfirm = {
+                        openAlertDialogChangePlan = false
+                        navController.popBackStack()
+
+                        val date = viewModel.hasMealPlanForDate.value?.date
+                        navController.navigate(route = "${Route.REGISTER_SCREEN}/${UserActionType.UPDATE}?date=$date")
+                    },
+                    viewModel = viewModel
                 )
             }
         }
@@ -236,7 +256,7 @@ private fun DateComponent(
             style = CalendarStyle.MONTH
         ),
         selection = CalendarSelection.Date { date ->
-            viewModel.onEvent(RegisterFormEvent.DateChanged(date.toString()))
+            viewModel.getMealPlanStatus(date.toString())
         }
     )
 
@@ -543,6 +563,38 @@ fun AlertDialogRegister(
                     )
                 }
             }
+        )
+    }
+}
+
+@Composable
+fun AlertDialogChangePlan(
+    openAlertDialog: Boolean,
+    onClose: () -> Unit,
+    onConfirm: () -> Unit,
+    viewModel: RegisterViewModel,
+) {
+    if (openAlertDialog) {
+        AlertDialog(
+            onDismissRequest = { onClose() },
+            confirmButton = {
+                Button(onClick = { onConfirm() }) {
+                    Text(text = stringResource(id = R.string.change_update_meal))
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { onClose() }) {
+                    Text(text = stringResource(id = R.string.cancel))
+                }
+            },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Info,
+                    contentDescription = null
+                )
+            },
+            title = {},
+            text = { Text(text = stringResource(id = R.string.meal_plan_for_date)) }
         )
     }
 }

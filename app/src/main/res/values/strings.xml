@@ -21,6 +21,8 @@
     <string name="ok">확인</string>
     <string name="save">저장</string>
     <string name="register">등록</string>
+    <string name="meal_plan_for_date">해당 날짜에 등록되어있는 식단이 있습니다.\n식단 수정으로 이동하시겠습니까?</string>
+    <string name="change_update_meal">식단 수정으로 이동</string>
     <string name="check_register_meal">식단을 등록 하시겠습니까?</string>
     <string name="check_update_meal">식단을 수정 하시겠습니까?</string>
     <string name="empty_menus">등록된 메뉴가 없습니다.</string>
