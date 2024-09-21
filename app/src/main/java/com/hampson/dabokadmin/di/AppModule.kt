@@ -8,6 +8,7 @@ import com.hampson.dabokadmin.domain.manager.LocalUserManager
 import com.hampson.dabokadmin.domain.repository.CategoryRepository
 import com.hampson.dabokadmin.domain.repository.MealRepository
 import com.hampson.dabokadmin.domain.repository.MenuRepository
+import com.hampson.dabokadmin.domain.repository.UserRepository
 import com.hampson.dabokadmin.domain.use_case.category.CategoryUseCases
 import com.hampson.dabokadmin.domain.use_case.category.GetCategoriesUseCase
 import com.hampson.dabokadmin.domain.use_case.meal.GetMealsUseCase
@@ -21,12 +22,13 @@ import com.hampson.dabokadmin.domain.use_case.manager.UpdateThemeUseCase
 import com.hampson.dabokadmin.domain.use_case.meal.DeleteMealUseCase
 import com.hampson.dabokadmin.domain.use_case.meal.GetMealUseCase
 import com.hampson.dabokadmin.domain.use_case.meal.UpdateMealUseCase
-import com.hampson.dabokadmin.presentation.ManagerViewModel
+import com.hampson.dabokadmin.domain.use_case.user.GetUserInfoUseCase
+import com.hampson.dabokadmin.domain.use_case.user.SaveUserInfoUseCase
+import com.hampson.dabokadmin.domain.use_case.user.UserInfoUseCases
 import com.hampson.dabokadmin.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -115,6 +117,15 @@ object AppModule {
         return ManagerUseCases(
             getThemeUseCase = GetThemeUseCase(manager),
             updateThemeUseCase = UpdateThemeUseCase(manager)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserInfoUseCases(repository: UserRepository): UserInfoUseCases {
+        return UserInfoUseCases(
+            getUserInfoUseCase = GetUserInfoUseCase(repository),
+            saveUserInfoUseCase = SaveUserInfoUseCase(repository)
         )
     }
 }

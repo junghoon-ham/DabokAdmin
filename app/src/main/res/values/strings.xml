@@ -30,4 +30,6 @@
     <string name="update_meal">식단수정</string>
     <string name="copy_meal">식단복사</string>
     <string name="settings_theme">테마 설정</string>
+    <string name="login">로그인</string>
+    <string name="failure_user_info">유저 정보가 일치하지 않습니다.</string>
 </resources>

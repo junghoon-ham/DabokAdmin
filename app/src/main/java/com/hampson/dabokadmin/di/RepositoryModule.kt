@@ -3,9 +3,11 @@ package com.hampson.dabokadmin.di
 import com.hampson.dabokadmin.data.repository.CategoryRepositoryImpl
 import com.hampson.dabokadmin.data.repository.MealRepositoryImpl
 import com.hampson.dabokadmin.data.repository.MenuRepositoryImpl
+import com.hampson.dabokadmin.data.repository.UserRepositoryImpl
 import com.hampson.dabokadmin.domain.repository.CategoryRepository
 import com.hampson.dabokadmin.domain.repository.MealRepository
 import com.hampson.dabokadmin.domain.repository.MenuRepository
+import com.hampson.dabokadmin.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -33,4 +35,10 @@ abstract class RepositoryModule {
     abstract fun bindMealRepository(
         mealRepository: MealRepositoryImpl
     ): MealRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserInfoRepository(
+        userRepository: UserRepositoryImpl
+    ): UserRepository
 }

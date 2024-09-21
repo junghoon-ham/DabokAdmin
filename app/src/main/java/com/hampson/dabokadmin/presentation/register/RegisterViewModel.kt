@@ -44,7 +44,6 @@ class RegisterViewModel @Inject constructor(
     private val categoryUseCase: CategoryUseCases,
     private val menuUseCases: MenuUseCases,
     private val mealUseCases: MealUseCases,
-    private val managerUseCases: ManagerUseCases,
     private val validateDate: ValidateDate = ValidateDate(),
     private val validateMenus: ValidateMenus = ValidateMenus()
 ): ViewModel() {

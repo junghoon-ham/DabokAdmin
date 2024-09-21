@@ -568,7 +568,7 @@ fun AlertDialogRegister(
 }
 
 @Composable
-fun AlertDialogChangePlan(
+private fun AlertDialogChangePlan(
     openAlertDialog: Boolean,
     onClose: () -> Unit,
     onConfirm: () -> Unit,

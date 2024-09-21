@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -48,23 +49,15 @@ fun MealListScreen(navController: NavController) {
         context?.finish()
     }
 
-    LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 viewModel.loadMealsResult()
             }
-        })
-    }
-
-    LaunchedEffect(successDelete) {
-        viewModel.successEvent.collect {  message ->
-            //navController.navigateUp()
-//
-            //Toast.makeText(
-            //    context,
-            //    message,
-            //    Toast.LENGTH_SHORT
-            //).show()
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 
